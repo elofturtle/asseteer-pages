@@ -1,0 +1,53 @@
+<?xml version="1.0" encoding="UTF-8"?><!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd"><html xmlns="http://www.w3.org/1999/xhtml" lang="sv"><head><meta http-equiv="Content-Type" content="text/html;charset=UTF-8"/><link rel="stylesheet" href="../jacoco-resources/report.css" type="text/css"/><link rel="shortcut icon" href="../jacoco-resources/report.gif" type="image/gif"/><title>ProgramvaraFileReader.java</title><link rel="stylesheet" href="../jacoco-resources/prettify.css" type="text/css"/><script type="text/javascript" src="../jacoco-resources/prettify.js"></script></head><body onload="window['PR_TAB_WIDTH']=4;prettyPrint()"><div class="breadcrumb" id="breadcrumb"><span class="info"><a href="../jacoco-sessions.html" class="el_session">Sessions</a></span><a href="../index.html" class="el_report">Asseteer</a> &gt; <a href="index.source.html" class="el_package">com.elofturtle.asseteer.io</a> &gt; <span class="el_source">ProgramvaraFileReader.java</span></div><h1>ProgramvaraFileReader.java</h1><pre class="source lang-java linenums">package com.elofturtle.asseteer.io;
+
+import java.io.File;
+import java.io.FileNotFoundException;
+import java.util.ArrayList;
+import java.util.List;
+
+import com.elofturtle.asseteer.model.Asset;
+import com.elofturtle.asseteer.model.Dependency;
+import com.elofturtle.asseteer.model.Programvara;
+import com.jcabi.xml.XML;
+import com.jcabi.xml.XMLDocument;
+
+/**
+ * Importerar en XML med programvaror
+ */
+<span class="nc" id="L17">public class ProgramvaraFileReader extends AssetFileReader {</span>
+
+	/**
+	 *Följer inte CycloneDX utan ett eget, enkelt format, för import.
+	 */
+	@Override
+	public ArrayList&lt;Asset&gt; readFromFile(String filePath) {
+<span class="nc" id="L24">		ArrayList&lt;Asset&gt; programvaror = new ArrayList&lt;&gt;();</span>
+        XML xml;
+		try {
+<span class="nc" id="L27">			xml = new XMLDocument(new File(filePath));</span>
+<span class="nc" id="L28">	        List&lt;XML&gt; nodes = xml.nodes(&quot;//programvara&quot;);</span>
+<span class="nc bnc" id="L29" title="All 2 branches missed.">	        for (XML node : nodes) {</span>
+<span class="nc" id="L30">	            Programvara programvara = new Programvara();</span>
+	            
+<span class="nc" id="L32">	            programvara.setName(node.xpath(&quot;namn/text()&quot;).get(0));</span>
+<span class="nc" id="L33">	            programvara.setLeverantör(node.xpath(&quot;leverantör/text()&quot;).get(0));</span>
+<span class="nc" id="L34">	            programvara.setÄgare(node.xpath(&quot;ägare/text()&quot;).get(0));</span>
+<span class="nc" id="L35">	            programvara.setVersion(node.xpath(&quot;version/text()&quot;).get(0));</span>
+	            
+<span class="nc" id="L37">	            List&lt;String&gt; dependencies = node.xpath(&quot;beroenden/beroende/text()&quot;);</span>
+<span class="nc bnc" id="L38" title="All 2 branches missed.">	            for (String dep : dependencies) {</span>
+<span class="nc" id="L39">	                Dependency dependency = new Dependency(dep);</span>
+<span class="nc" id="L40">	                programvara.addDependency(dependency);</span>
+<span class="nc" id="L41">	            }	            </span>
+	            
+<span class="nc" id="L43">	            programvaror.add(programvara);</span>
+<span class="nc" id="L44">	        }</span>
+<span class="nc" id="L45">		} catch (FileNotFoundException e) {</span>
+<span class="nc" id="L46">			e.printStackTrace();</span>
+<span class="nc" id="L47">			System.exit(1);</span>
+<span class="nc" id="L48">		}</span>
+
+<span class="nc" id="L50">        return programvaror;</span>
+	}
+}
+</pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.8.12.202403310830</span></div></body></html>

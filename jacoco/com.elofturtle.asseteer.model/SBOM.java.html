@@ -1,0 +1,33 @@
+<?xml version="1.0" encoding="UTF-8"?><!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd"><html xmlns="http://www.w3.org/1999/xhtml" lang="sv"><head><meta http-equiv="Content-Type" content="text/html;charset=UTF-8"/><link rel="stylesheet" href="../jacoco-resources/report.css" type="text/css"/><link rel="shortcut icon" href="../jacoco-resources/report.gif" type="image/gif"/><title>SBOM.java</title><link rel="stylesheet" href="../jacoco-resources/prettify.css" type="text/css"/><script type="text/javascript" src="../jacoco-resources/prettify.js"></script></head><body onload="window['PR_TAB_WIDTH']=4;prettyPrint()"><div class="breadcrumb" id="breadcrumb"><span class="info"><a href="../jacoco-sessions.html" class="el_session">Sessions</a></span><a href="../index.html" class="el_report">Asseteer</a> &gt; <a href="index.source.html" class="el_package">com.elofturtle.asseteer.model</a> &gt; <span class="el_source">SBOM.java</span></div><h1>SBOM.java</h1><pre class="source lang-java linenums">package com.elofturtle.asseteer.model;
+
+import com.fasterxml.jackson.dataformat.xml.annotation.JacksonXmlRootElement;
+
+
+/** 
+ * Förenklad modell för beroenden från CycloneDX Security Bill of Material (SBOM). &lt;p&gt;
+ * Tänkt att kunna läsa XML med metadata och dra ut det relevanta förutom traditionell inmatning.&lt;p&gt;
+ */
+@JacksonXmlRootElement(localName = &quot;SBOM&quot;)
+public class SBOM extends Asset {	
+	
+	/**
+	 * Konstruktor som sätter namn och beräknar unikt id för objektet.
+	 * @param name visningsnamn
+	 * @param purl &quot;pkg:{@literal&lt;}groupid{@literal}&gt;/{@literal&lt;}artefact{@literal&gt;}{@literal @}{@literal&lt;}version{@literal&gt;}&quot;
+	 */
+	public SBOM(String name, String purl) {
+<span class="nc" id="L19">		super();</span>
+<span class="nc" id="L20">		this.setName(name);</span>
+<span class="nc" id="L21">		this.setId(purl);</span>
+<span class="nc" id="L22">	}</span>
+	
+	/**
+	 * Standardkonstruktor.
+	 * Användaren måste sätta relevanta värden på egen hand.
+	 * 
+	 */
+	public SBOM() {
+<span class="nc" id="L30">		super();</span>
+<span class="nc" id="L31">	}</span>
+}
+</pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.8.12.202403310830</span></div></body></html>

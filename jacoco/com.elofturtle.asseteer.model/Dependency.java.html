@@ -1,0 +1,100 @@
+<?xml version="1.0" encoding="UTF-8"?><!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd"><html xmlns="http://www.w3.org/1999/xhtml" lang="sv"><head><meta http-equiv="Content-Type" content="text/html;charset=UTF-8"/><link rel="stylesheet" href="../jacoco-resources/report.css" type="text/css"/><link rel="shortcut icon" href="../jacoco-resources/report.gif" type="image/gif"/><title>Dependency.java</title><link rel="stylesheet" href="../jacoco-resources/prettify.css" type="text/css"/><script type="text/javascript" src="../jacoco-resources/prettify.js"></script></head><body onload="window['PR_TAB_WIDTH']=4;prettyPrint()"><div class="breadcrumb" id="breadcrumb"><span class="info"><a href="../jacoco-sessions.html" class="el_session">Sessions</a></span><a href="../index.html" class="el_report">Asseteer</a> &gt; <a href="index.source.html" class="el_package">com.elofturtle.asseteer.model</a> &gt; <span class="el_source">Dependency.java</span></div><h1>Dependency.java</h1><pre class="source lang-java linenums">package com.elofturtle.asseteer.model;
+
+// Färdigtestad &amp; dokumenterad
+
+import java.util.Objects;
+
+/**
+ * Används för att binda samman Assets via deras uuid (det är en tunn wrapper för en String).
+ * Troligtvis vill du inte använda denna självständigt, det är en intern del av applikationen.
+ * */
+public class Dependency implements Comparable&lt;Dependency&gt; {
+	private String id;
+	
+	/**
+	 * Den tomma konstruktorn behövs för deserialisering.
+	 * @hidden
+	 */
+<span class="nc" id="L18">	public Dependency() {</span>
+<span class="nc" id="L19">		id = &quot;&quot;;</span>
+<span class="nc" id="L20">	}</span>
+	
+	/**
+	 * Håller en referens till det unika id:t för en Asset.
+	 * @param id
+	 */
+<span class="nc" id="L26">	public Dependency(String id) {</span>
+<span class="nc" id="L27">		this.id = id;</span>
+<span class="nc" id="L28">	}</span>
+
+	
+	/**
+	 * Håller en referens till en Asset via dess id.
+	 * @param a
+	 */
+<span class="nc" id="L35">	public Dependency(Asset a) {</span>
+<span class="nc" id="L36">		this.id = a.getId();</span>
+<span class="nc" id="L37">	}</span>
+	
+	
+
+	/**
+	 * @return referens till en Asset.
+	 */
+	public String getId() {
+<span class="nc" id="L45">		return id;</span>
+	}
+
+	/**
+	 * Sätt id manuellt.
+	 * @param id
+	 */
+	public void setId(String id) {
+<span class="nc bnc" id="L53" title="All 2 branches missed.">		if(id == null) {</span>
+<span class="nc" id="L54">			this.id = &quot;&quot;;</span>
+		}else {
+<span class="nc" id="L56">			this.id = id;</span>
+		}
+<span class="nc" id="L58">	}</span>
+
+	/**
+	 *Skriver ut det unika id:t som refereras.
+	 */
+	@Override
+	public String toString() {
+<span class="nc" id="L65">		return this.id;</span>
+	}
+	
+	/**
+	 * id-attributet används för unikhet. 
+	 */
+	@Override
+	public int hashCode() {
+<span class="nc" id="L73">		return Objects.hash(id);</span>
+	}
+
+	/**
+	 * Bedömer likhet genom att jämföra id:t.
+	 */
+	@Override
+	public boolean equals(Object obj) {
+<span class="nc bnc" id="L81" title="All 2 branches missed.">		if (this == obj)</span>
+<span class="nc" id="L82">			return true;</span>
+<span class="nc bnc" id="L83" title="All 2 branches missed.">		if (obj == null)</span>
+<span class="nc" id="L84">			return false;</span>
+<span class="nc bnc" id="L85" title="All 2 branches missed.">		if (getClass() != obj.getClass())</span>
+<span class="nc" id="L86">			return false;</span>
+<span class="nc" id="L87">		Dependency other = (Dependency) obj;</span>
+<span class="nc" id="L88">		return Objects.equals(id, other.id);</span>
+	}
+
+	/**
+	 *Jämför två Asset-id:n och använder det för att bedöma invärtes ordning.
+	 */
+	@Override
+	public int compareTo(Dependency o) {
+<span class="nc" id="L96">		return this.id.compareTo(o.toString());</span>
+	}
+	
+}
+</pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.8.12.202403310830</span></div></body></html>

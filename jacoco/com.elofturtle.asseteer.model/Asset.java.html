@@ -1,0 +1,307 @@
+<?xml version="1.0" encoding="UTF-8"?><!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd"><html xmlns="http://www.w3.org/1999/xhtml" lang="sv"><head><meta http-equiv="Content-Type" content="text/html;charset=UTF-8"/><link rel="stylesheet" href="../jacoco-resources/report.css" type="text/css"/><link rel="shortcut icon" href="../jacoco-resources/report.gif" type="image/gif"/><title>Asset.java</title><link rel="stylesheet" href="../jacoco-resources/prettify.css" type="text/css"/><script type="text/javascript" src="../jacoco-resources/prettify.js"></script></head><body onload="window['PR_TAB_WIDTH']=4;prettyPrint()"><div class="breadcrumb" id="breadcrumb"><span class="info"><a href="../jacoco-sessions.html" class="el_session">Sessions</a></span><a href="../index.html" class="el_report">Asseteer</a> &gt; <a href="index.source.html" class="el_package">com.elofturtle.asseteer.model</a> &gt; <span class="el_source">Asset.java</span></div><h1>Asset.java</h1><pre class="source lang-java linenums">package com.elofturtle.asseteer.model;
+
+import java.util.ArrayList;
+import com.fasterxml.jackson.dataformat.xml.annotation.JacksonXmlRootElement;
+import com.fasterxml.jackson.annotation.JsonTypeInfo;
+import com.fasterxml.jackson.annotation.JsonSetter;
+import com.fasterxml.jackson.annotation.JsonSubTypes;
+import javax.annotation.Generated;
+import java.util.Objects;
+
+/**
+ * &quot;Allting&quot; är en Asset, i framtiden kommer det att behövas ett 
+ * metaobjekt på toppen eller nåt annat för att identififera toppnivåapplikationerna. 
+ */
+@JacksonXmlRootElement(localName = &quot;Asset&quot;)
+@JsonTypeInfo(use = JsonTypeInfo.Id.NAME, include = JsonTypeInfo.As.PROPERTY, property = &quot;assetType&quot;)
+/*
+ * TODO: kan JsonSubTypes deklareras nere i respektive subklass, så att subklasser från tredje part skulle kunna läggas till dynamiskt?
+ * */
+@JsonSubTypes({
+    @JsonSubTypes.Type(value = Programvara.class, name = &quot;Programvara&quot;),
+    @JsonSubTypes.Type(value = SBOM.class, name = &quot;SBOM&quot;)
+    })
+public abstract class Asset implements Comparable&lt;Asset&gt; {
+	/**
+	 * En eftergift för JacksonXML.
+	 * Ville egentligen ha assetType som ett attribut när jag gjorde 
+	 * export till fil, men det gick dåligt upprepade gånger.
+	 * 
+	 * I en senare version borde jag anstränga mig lite för att få till det på ett bättre sätt.
+	 * 
+	 * GPT hade svårt att skilja på Jackson JSON respektive XML och gav ofta felaktiga exempel.
+	 */
+	private String assetType; 
+	
+	/**
+	 * What's in a name... 
+	 * Den delen av en asset som är översiktlig, t.ex. applikationsnamn eller artefakt.
+	 * Kommer att variera beroende för subklasser vad som är ett rimligt värde.
+	 */
+	private String name;
+	/**
+	 * Subklasser ansvarar för att sätta id till ett &quot;bra, unikt, värde&quot;.
+	 * Avsikten är att det ska motsvara {@link &lt;a href=&quot;https://github.com/package-url/purl-spec&quot;&gt;purl&lt;/&lt;a&gt;}
+	 */
+	private String id;
+	/**
+	 * Referenser till beroenden.
+	 */
+	private ArrayList&lt;Dependency&gt; dependencies;
+	/**
+	 * Håller reda på primära Assets, dvs 
+	 * vilka tillgångar i ett stort bibliotek har interna förvaltare
+	 * t.ex. egenutvecklade applikationer.
+	 */
+	private boolean important;
+	
+	/**
+	 * @param id
+	 * Eftersom vi i dagsläget muterar id vid skapande så får vi problem när det läses
+	 * in från fil. Därför har vi en separat metod som bara ska användas vid {@link com.elofturtle.asseteer.io.XmlUtil deserialisering}. 
+	 * @deprecated kommer troligtvis att deprekeras i version 2.
+	 */
+	@JsonSetter(&quot;id&quot;)
+    public void setIdFromDeserialization(String id) {
+<span class="nc" id="L66">        this.id = id;</span>
+<span class="nc" id="L67">    }</span>
+	
+	/**
+	 * @return  Är detta en toppnivåapplikation med en intern förvaltare?
+	 */
+	public boolean isImportant() {
+<span class="nc" id="L73">		return important;</span>
+	}
+
+	/**
+	 * @param important
+	 * Om satt så betecknar det att detta är en Asset som är viktig, och troligtvis har en intern förvaltare/intressent.
+	 */
+	public void setImportant(boolean important) {
+<span class="nc" id="L81">		this.important = important;</span>
+<span class="nc" id="L82">	}</span>
+
+	/**
+	 * @return namn
+	 * Namn är en läsvänlig egenskap.
+	 * Det kan finnas dubletter, t.ex. två versioner av samma applikation.
+	 * @see #toRepresentation() 
+	 */
+	public String getName() {
+<span class="nc" id="L91">		return name;</span>
+	}
+	
+	/**
+	 * @hidden
+	 */
+	@Generated(&quot;none&quot;)
+	@Override
+	public int hashCode() { //hash och equals tydligen viktiga om man vill ha saker i listor, compareTo() inte tillräckligt.
+<span class="nc" id="L100">		return Objects.hash(id);</span>
+	}
+
+	/**
+	 *@hidden
+	 */
+	@Generated(&quot;none&quot;)
+	@Override
+	public boolean equals(Object obj) {
+<span class="nc bnc" id="L109" title="All 2 branches missed.">		if (this == obj)</span>
+<span class="nc" id="L110">			return true;</span>
+<span class="nc bnc" id="L111" title="All 2 branches missed.">		if (obj == null)</span>
+<span class="nc" id="L112">			return false;</span>
+<span class="nc bnc" id="L113" title="All 2 branches missed.">		if (getClass() != obj.getClass())</span>
+<span class="nc" id="L114">			return false;</span>
+<span class="nc" id="L115">		Asset other = (Asset) obj;</span>
+<span class="nc" id="L116">		return Objects.equals(id, other.id);</span>
+	}
+
+	/**
+	 * @return id (purl)
+	 */
+	public String getId() {
+<span class="nc" id="L123">		return id;</span>
+	}
+
+	
+	/**
+	 * @param id
+	 * Varje asset identifieras av ett id, t.ex. purl.
+	 * För närvarande innehåller den klassnamnet för unikhet mellan subklasse, vilket
+	 * konkurrerar med {@link #assetType} så det måste refaktoreras vid tillfälle.
+	 */
+	public void setId(String id) {
+<span class="nc" id="L134">		this.id = this.getClass().getSimpleName() + &quot;:&quot; + id;</span>
+<span class="nc" id="L135">	}</span>
+
+	/**
+	 * @return en referens till kända beroenden.
+	 */
+	public ArrayList&lt;Dependency&gt; getDependencies() {
+<span class="nc" id="L141">		return dependencies;</span>
+	}
+
+	/**
+	 * @param dependencies
+	 * Koppla en extern lista med beroenden till en Asset.
+	 * Adderar inte till existerande beroenden!
+	 */
+	public void setDependencies(ArrayList&lt;Dependency&gt; dependencies) {
+		// Möjliggör manipulering av internt state, borde kanske kopiera istället.
+<span class="nc" id="L151">		this.dependencies = dependencies;</span>
+<span class="nc" id="L152">	}</span>
+	
+	
+	/**
+	 * @param d
+	 * Addera en {@link com.elofturtle.asseteer.model.Dependency Dependency} till Asset.
+	 */
+	public void addDependency(Dependency d) {
+<span class="nc bnc" id="L160" title="All 2 branches missed.">		if(dependencies == null) {</span>
+<span class="nc" id="L161">			dependencies = new ArrayList&lt;Dependency&gt;();</span>
+		}
+<span class="nc bnc" id="L163" title="All 2 branches missed.">		if(!dependencies.contains(d)) {</span>
+<span class="nc" id="L164">			dependencies.add(d);</span>
+		}
+<span class="nc" id="L166">	}</span>
+	
+	/**
+	 * @param a
+	 * Addera en {@link com.elofturtle.asseteer.model.Asset Asset} som beroende till denna Asset.
+	 */
+	public void addDependency(Asset a) {
+<span class="nc" id="L173">		addDependency(new Dependency(a));</span>
+<span class="nc" id="L174">	}</span>
+	
+	/**
+	 * @param d
+	 * Avlägsna ett beroende.
+	 */
+	public void removeDependency(Dependency d) {
+<span class="nc" id="L181">		dependencies.remove(d);</span>
+		
+<span class="nc" id="L183">	}</span>
+	
+	/**
+	 * @param a
+	 * Avlägsna ett beroende.
+	 */
+	public void removeDependency(Asset a) {
+<span class="nc" id="L190">		dependencies.remove(new Dependency(a));</span>
+<span class="nc" id="L191">	}</span>
+
+	/**
+	 * @param name
+	 * Sätt visningsnamn på Asset.
+	 */
+	public void setName(String name) {
+<span class="nc" id="L198">		this.name = name;</span>
+<span class="nc" id="L199">	}</span>
+	
+	/**
+	 * Behövs för {@link com.elofturtle.asseteer.io.XmlUtil#deserialize(String) deserialisering}.
+	 * Kräver att alla attribut sätts manuellt, förutom {@link #assetType}.
+	 */
+<span class="nc" id="L205">	public Asset(){</span>
+<span class="nc" id="L206">		name = null;</span>
+<span class="nc" id="L207">		dependencies = null;</span>
+<span class="nc" id="L208">		important = false;</span>
+<span class="nc" id="L209">		setAssetType();</span>
+<span class="nc" id="L210">	}</span>
+	
+	/**
+	 * @return {@link com.elofturtle.asseteer.model.Dependency Dependency} som refererar till {@link #id} för objektet.
+	 * &lt;br/&gt;	  
+	 * Eftersom det används mycket i länkar, men vi egentligen arbetar med Assets, så är det bekvämt att kunna returnera referensen från objektet istället för att konvertera det manuellt.
+	 */
+	public Dependency toDependency() {
+<span class="nc" id="L218">		return new Dependency(this);</span>
+	}
+	
+	/**
+	 * Sätter de viktigaste (minsta rekommenderade) parametrarna.
+	 * @param name Objektets {@link #name namn}
+	 * @param dependencies Lista med {@link #dependencies beroenden}.
+	 * 
+	 */
+<span class="nc" id="L227">	public Asset(String name, ArrayList&lt;Dependency&gt; dependencies) {</span>
+<span class="nc" id="L228">		this.name = name;</span>
+<span class="nc" id="L229">		this.dependencies = dependencies;</span>
+<span class="nc" id="L230">		important = false;</span>
+<span class="nc" id="L231">	}</span>
+	
+	/**
+	 * Grundläggande konstruktor. &lt;p&gt;
+	 * Andra parametrar måste sättas via setters för att objektet ska vara användbart.
+	 * @param name Objektets {@link #name}.
+	 */
+<span class="nc" id="L238">	public Asset(String name) {</span>
+<span class="nc" id="L239">		this.name = name;</span>
+<span class="nc" id="L240">		this.dependencies = null;</span>
+<span class="nc" id="L241">	}</span>
+	
+	/**
+	 *{@inheritDoc}
+	 *&lt;p&gt;
+	 *Returnerar {@link #name namn} på ojektet.
+	 */
+	@Override
+	public String toString() {
+<span class="nc" id="L250">		return this.name;</span>
+	}
+	
+	/**
+	 * En mer detaljerad (beskrivande) sträng som beskriver en {@link Asset}.
+	 * @return Om objektet saknar beroenden: 
+	 * &lt;pre&gt;
+	 * namn : id
+	 * &lt;/pre&gt;
+	 * 
+	 * Om objektet har n beroenden:
+	 * &lt;pre&gt;
+	 * namn: id
+	 *    Dependencies:
+	 *       dependency1
+	 *       ...
+	 *       dependency n
+	 *&lt;/pre&gt;
+	 */
+	public String toRepresentation() {
+<span class="nc" id="L270">		StringBuilder str = new StringBuilder();</span>
+<span class="nc" id="L271">		str.append(name + &quot; : &quot; + id);</span>
+<span class="nc bnc" id="L272" title="All 4 branches missed.">		if(dependencies != null &amp;&amp; dependencies.size() != 0) {</span>
+<span class="nc" id="L273">			str.append(&quot;\n\tDependencies\n&quot;);</span>
+<span class="nc bnc" id="L274" title="All 2 branches missed.">			for (var d : dependencies) {</span>
+<span class="nc" id="L275">				str.append(&quot;\t\t&quot; + d + &quot;\n&quot;);</span>
+<span class="nc" id="L276">			}</span>
+		}
+<span class="nc" id="L278">		return str.toString();</span>
+	}
+	
+	/**
+	 * {@inheritDoc}
+	 * Alla klasser får ansvaret att generera ett globalt unikt ID som kan användas vid jämförelser.
+	 * &lt;p&gt;Borde integrera klasstyp här på sikt.
+	 */
+	@Override
+	public int compareTo(Asset o) {
+<span class="nc" id="L288">		return this.id.compareTo(o.id);</span>
+	}
+
+	/**
+	 * Behövs för {@link com.elofturtle.asseteer.io.XmlUtil XmlUtil} och bör inte ändras.
+	 * @return {@link #assetType} 
+	 */
+	public String getAssetType() {
+<span class="nc" id="L296">		return assetType;</span>
+	}
+
+	/**
+	 * Behövs för {@link com.elofturtle.asseteer.io.XmlUtil XmlUtil}.
+	 */
+	public void setAssetType() {
+<span class="nc" id="L303">		assetType = this.getClass().getSimpleName();</span>
+<span class="nc" id="L304">	}</span>
+
+}
+</pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.8.12.202403310830</span></div></body></html>

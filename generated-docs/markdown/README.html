@@ -1,0 +1,47 @@
+<h1>asseteer</h1>
+<p>Lightweight Asset Management Projektförslag, tänkt att pågå så långt vi hinner, kanske genom forsätningskursen.</p>
+<h1>Deltagare</h1>
+<p>elofturtle produktpelle</p>
+<h1>Roadmap</h1>
+<p>Det övergripande målet är att skapa en applikation för att hantera diverse tillgångar, som får genomgå flera iterationer/implementationer.</p>
+<h2>Vilka assets?</h2>
+<ul>
+<li>Globala grupper &lt;--&gt; Teknisk applikation</li>
+<li>CycloneDX &amp; SPDX --&gt; Säkerhetshantering, säka vem som använder vilket beroende</li>
+<li>Tekniska applikationer, till exempel Chrome, vem äger den, var finns systemdokumentation, etc.</li>
+</ul>
+<h2>Iterationer (tänkt livscykel för applikationen)</h2>
+<p>1 Enanvändarsystem utan db * Kan läsa &amp; spara data i form av XML, CSV. * Sparar sitt globala state som XML * Konfiguration * menybaserad nmatning via konsol 2 Enanvändarsystem med lokal databas (sqlite e.d. istället för XML för state) 3 Kunna söka på flera olika sätt, inklusive med wildcard 4 Riktig databas, programmet kan koppla upp sig mot den även om den inte ligger på localhost 5 Söd för REST-gränssnitt, svar/input via JSON primärt 6 Enkelt webbgränsnitt för visning, sökning, inmatning 7 &quot;rikig&quot; deployment på extern server 8 Fleranvändarstöd, sessionshantering, säkra att man inte skriver över varandras redigeringar. 9 Behörighetshantering (admin/write/read)</p>
+<h3>Iteration 1</h3>
+<p>Kunna konsumera ett antal cyclonedx-xml:er från en mapp (se tex https://github.com/CycloneDX/bom-examples ) genom att ange sökväg på kommandoraden</p>
+<p>Komma fram till format för klientapplikationer (vilka uppfiter den delen behöver kunna hantera</p>
+<p>Kunna mata in klentapplikationsdata från en csv genom att ange sökväg på kommandoraden</p>
+<p>Kunna mata in, söka, lista, redigera, utgå från tidigare information om klientapplikation</p>
+<p>Grundläggande konfiguration för applikationen (hårdkodat, tex var leta efter xml:er för cyclonedx) så att man slipper ange det på kommandoraden</p>
+<p>```mermaid classDiagram Asset &lt;|-- SBOM Asset &lt;|-- Programvara Asset &lt;|-- Licens Asset &quot;0..n&quot; *-- Dependency : dependencies</p>
+<p>Dependency</p>
+<pre><code>&lt;&lt;abstract&gt;&gt; Asset
+class Asset{
+    -String name
+    -Dependency[] dependencies
+    +String getUUID()
+    +String getName()
+    +void setName(Sring name)
+    +int compareTo(Asset o)
+}
+</code></pre>
+<p>class Dependency{ -String UUID } ```</p>
+<h1>Länkar</h1>
+<h2>SoftWare IDentification Tag (SWID)</h2>
+<p>https://scribesecurity.com/blog/spdx-vs-cyclonedx-sbom-formats-compared/ https://pages.nist.gov/swid-tools/ https://github.com/Labs64/swid-generator https://github.com/swidtags/rpm2swidtag/tree/master Spara state och hantera ev identisk information som ligger i mapp som läses in (är det sparat state eller indatat som gäller i vilken ordning?)</p>
+<p>globala grupper p.s.s. som för klientappliaktioner.</p>
+<p>Kunna söka &amp; visualisera beroenden cyclonedx validera xml https://www.baeldung.com/java-validate-xml-xsd</p>
+<h1>Hur tror Chat GPT att det här projektet ser ut?</h1>
+<h2>UML-diagram</h2>
+<p><img src="images/asseteer_uml_class_diagram.png" alt="slightl wrong uml diagram" title="UML" /></p>
+<h2>Interactions</h2>
+<p><img src="images/asseteer_ineraction_diagram.png" alt="Pretty horrible interaction diagram" title="Interactions" /></p>
+<h2>Gick det bra?</h2>
+<p>Nej, gpt:s forte verkar inte vara den sortens kodanalys.</p>
+<p>I eclipse verkar stödet halvt försvunnit, så numera är det kanske främst kommersiella alternativ som gäller.</p>
+<p>Om man nu inte går all in och installerar Papyrus.</p>
