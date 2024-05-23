@@ -1,6 +1,7 @@
 GROUP,PACKAGE,CLASS,INSTRUCTION_MISSED,INSTRUCTION_COVERED,BRANCH_MISSED,BRANCH_COVERED,LINE_MISSED,LINE_COVERED,COMPLEXITY_MISSED,COMPLEXITY_COVERED,METHOD_MISSED,METHOD_COVERED
 Asseteer,com.elofturtle.asseteer.application,MENU_STATE,54,0,0,0,10,0,2,0,2,0
 Asseteer,com.elofturtle.asseteer.application,ASSET_TYPES,24,0,0,0,5,0,2,0,2,0
+Asseteer,com.elofturtle.asseteer.application,Asseteer,853,0,79,0,233,0,63,0,19,0
 Asseteer,com.elofturtle.asseteer.application,MenuHelpers,114,0,14,0,26,0,10,0,3,0
 Asseteer,com.elofturtle.asseteer.model,Dependency,0,75,0,8,0,25,0,13,0,9
 Asseteer,com.elofturtle.asseteer.model,Asset,6,215,3,15,3,62,3,30,0,24

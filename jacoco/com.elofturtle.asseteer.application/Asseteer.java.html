@@ -1,12 +1,12 @@
-<?xml version="1.0" encoding="UTF-8"?><!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd"><html xmlns="http://www.w3.org/1999/xhtml" lang="sv"><head><meta http-equiv="Content-Type" content="text/html;charset=UTF-8"/><link rel="stylesheet" href="../jacoco-resources/report.css" type="text/css"/><link rel="shortcut icon" href="../jacoco-resources/report.gif" type="image/gif"/><title>Asseteer.java</title><link rel="stylesheet" href="../jacoco-resources/prettify.css" type="text/css"/><script type="text/javascript" src="../jacoco-resources/prettify.js"></script></head><body onload="window['PR_TAB_WIDTH']=4;prettyPrint()"><div class="breadcrumb" id="breadcrumb"><span class="info"><a href="../jacoco-sessions.html" class="el_session">Sessions</a></span><a href="../index.html" class="el_report">Asseteer</a> &gt; <a href="index.source.html" class="el_package">com.elofturtle.asseteer.application</a> &gt; <span class="el_source">Asseteer.java</span></div><h1>Asseteer.java</h1><pre class="source lang-java linenums">package com.elofturtle.asseteer.application;
+<?xml version="1.0" encoding="UTF-8"?><!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd"><html xmlns="http://www.w3.org/1999/xhtml" lang="en"><head><meta http-equiv="Content-Type" content="text/html;charset=UTF-8"/><link rel="stylesheet" href="../jacoco-resources/report.css" type="text/css"/><link rel="shortcut icon" href="../jacoco-resources/report.gif" type="image/gif"/><title>Asseteer.java</title><link rel="stylesheet" href="../jacoco-resources/prettify.css" type="text/css"/><script type="text/javascript" src="../jacoco-resources/prettify.js"></script></head><body onload="window['PR_TAB_WIDTH']=4;prettyPrint()"><div class="breadcrumb" id="breadcrumb"><span class="info"><a href="../jacoco-sessions.html" class="el_session">Sessions</a></span><a href="../index.html" class="el_report">Asseteer</a> &gt; <a href="index.source.html" class="el_package">com.elofturtle.asseteer.application</a> &gt; <span class="el_source">Asseteer.java</span></div><h1>Asseteer.java</h1><pre class="source lang-java linenums">package com.elofturtle.asseteer.application;
 
 import java.util.ArrayList;
 import java.util.HashMap;
-import java.util.InputMismatchException;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Scanner;
-
+import java.util.Set;
 import java.io.BufferedWriter;
 import java.io.FileNotFoundException;
 import java.io.IOException;
@@ -25,6 +25,9 @@ import com.elofturtle.asseteer.exception.PEBKAC;
 import com.elofturtle.asseteer.exception.WeirdFileException;
 import com.elofturtle.asseteer.io.XmlUtil;
 
+
+
+
 /**
  * Huvudprogrammet
  */
@@ -36,7 +39,7 @@ public class Asseteer {
 	/**
 	 * Tabell för omvänd sökning
 	 */
-	private Map&lt;String, List&lt;Dependency&gt;&gt; reverse_lookup;
+	private Map&lt;String, Set&lt;Dependency&gt;&gt; reverse_lookup;
 	/**
 	 * Här sparas programmets bibliotek mellan körningar
 	 */
@@ -50,44 +53,85 @@ public class Asseteer {
 	 * Standardkonstruktor
 	 * @param path sökväg till programkatalog
 	 */
-	public Asseteer(String path) {
-		library = new ArrayList&lt;&gt;();
-		globalStateFile = path;
-		scanner = new Scanner(System.in);
-		reverse_lookup = new HashMap&lt;&gt;();
-	}
+<span class="nc" id="L56">	public Asseteer(String path) {</span>
+<span class="nc" id="L57">		library = new ArrayList&lt;&gt;();</span>
+<span class="nc" id="L58">		globalStateFile = path;</span>
+<span class="nc" id="L59">		scanner = new Scanner(System.in);</span>
+<span class="nc" id="L60">		reverse_lookup = new HashMap&lt;&gt;();</span>
+		
+<span class="nc" id="L62">	}</span>
+	
+	private void updateReverseLookup() {
+<span class="nc" id="L65">	    library.forEach(asset -&gt; {</span>
+<span class="nc" id="L66">	        asset.getDependencies().forEach(dependency -&gt; {</span>
+<span class="nc" id="L67">	            reverse_lookup.computeIfAbsent(dependency.toString(), k -&gt; new HashSet&lt;&gt;()).add(new Dependency(asset));</span>
+<span class="nc" id="L68">	        });</span>
+<span class="nc" id="L69">	    });</span>
+<span class="nc" id="L70">	}</span>
 	
 	/**
 	 * Läs in programkatalogen, t.ex. vid uppstart.
 	 * @throws WeirdFileException filundantag
 	 */
 	public void readState() throws WeirdFileException {
-		Path filePath = Paths.get(globalStateFile);
+<span class="nc" id="L77">		Path filePath = Paths.get(globalStateFile);</span>
 
         try {
-            byte[] fileBytes = Files.readAllBytes(filePath);
-            String fileContent = new String(fileBytes, StandardCharsets.UTF_8);
-            library = XmlUtil.deserialize(fileContent);
-        } catch (IOException e) {
+<span class="nc" id="L80">            byte[] fileBytes = Files.readAllBytes(filePath);</span>
+<span class="nc" id="L81">            String fileContent = new String(fileBytes, StandardCharsets.UTF_8);</span>
+<span class="nc" id="L82">            library = XmlUtil.deserialize(fileContent);</span>
+<span class="nc" id="L83">            updateReverseLookup();</span>
+            
+            
+<span class="nc" id="L86">        } catch (IOException e) {</span>
             // Handle IOException
-            System.err.println(&quot;An error occurred while reading the file: &quot; + e.getMessage());
-            e.printStackTrace();
-            throw new WeirdFileException(&quot;Unable to load application state&quot;, e);
-        } catch (SecurityException e) {
+<span class="nc" id="L88">            System.err.println(&quot;An error occurred while reading the file: &quot; + e.getMessage());</span>
+<span class="nc" id="L89">            e.printStackTrace();</span>
+<span class="nc" id="L90">            throw new WeirdFileException(&quot;Unable to load application state&quot;, e);</span>
+<span class="nc" id="L91">        } catch (SecurityException e) {</span>
             // Handle SecurityException
-            System.err.println(&quot;A security error occurred: &quot; + e.getMessage());
-            System.err.println(&quot;Program will exit!&quot;);
-            e.printStackTrace();
-            System.exit(1);
-        } catch (Exception e) {
+<span class="nc" id="L93">            System.err.println(&quot;A security error occurred: &quot; + e.getMessage());</span>
+<span class="nc" id="L94">            System.err.println(&quot;Program will exit!&quot;);</span>
+<span class="nc" id="L95">            e.printStackTrace();</span>
+<span class="nc" id="L96">            System.exit(1);</span>
+<span class="nc" id="L97">        } catch (Exception e) {</span>
             // Handle any other unexpected exceptions
-            System.err.println(&quot;An unexpected error occurred: &quot; + e.getMessage());
-            System.err.println(&quot;Program will exit!&quot;);
-            e.printStackTrace();
-            System.exit(1);
+<span class="nc" id="L99">            System.err.println(&quot;An unexpected error occurred: &quot; + e.getMessage());</span>
+<span class="nc" id="L100">            System.err.println(&quot;Program will exit!&quot;);</span>
+<span class="nc" id="L101">            e.printStackTrace();</span>
+<span class="nc" id="L102">            System.exit(1);</span>
         }
-		
+<span class="nc" id="L104">	}</span>
+	
+	/**
+	 * Returns a string representation of the reverse lookup map.
+	 * If a search term is provided, only keys containing the search term will be included.
+	 *
+	 * @param searchTerm The term to filter keys by. If null or empty, all keys will be included.
+	 * @return A string representation of the reverse lookup map, or an empty string if no values are found.
+	 */
+	public String getReverseLookupAsString(String searchTerm) {
+<span class="nc" id="L114">	    StringBuilder output = new StringBuilder();</span>
+<span class="nc" id="L115">	    reverse_lookup.forEach((key, dependencies) -&gt; {</span>
+<span class="nc bnc" id="L116" title="All 4 branches missed.">	        if (searchTerm == null || key.contains(searchTerm)) {</span>
+<span class="nc" id="L117">	            output.append(&quot;Key: &quot;).append(key).append(&quot;\n&quot;);</span>
+<span class="nc" id="L118">	            dependencies.forEach(dependency -&gt; output.append(&quot;\tDependency: &quot;).append(dependency).append(&quot;\n&quot;));</span>
+	        }
+<span class="nc" id="L120">	    });</span>
+<span class="nc bnc" id="L121" title="All 2 branches missed.">	    return output.length() &gt; 0 ? output.toString() : &quot;&quot;;</span>
 	}
+
+	/**
+	 * Returns a string representation of the reverse lookup map.
+	 * All keys and their corresponding dependencies will be included.
+	 *
+	 * @return A string representation of the reverse lookup map, or an empty string if no values are found.
+	 */
+	public String getReverseLookupAsString() {
+<span class="nc" id="L131">	    return getReverseLookupAsString(null);</span>
+	}
+
+
 	
 	/**
 	 * Spara programkatalogen, t.ex. när den har ändrats
@@ -95,45 +139,24 @@ public class Asseteer {
 	 */
 	public void saveState() throws WeirdFileException {
 		try {
-			String s = XmlUtil.serialize(library);
-			System.out.println(s);
-			try (FileOutputStream fos = new FileOutputStream(globalStateFile);
-					BufferedWriter writer = new BufferedWriter(new OutputStreamWriter(fos, &quot;UTF-8&quot;))) {
-				writer.write(s);
-			} catch (FileNotFoundException e) {
-				e.printStackTrace();
-				System.exit(1);
-			} catch (IOException e) {
-				e.printStackTrace();
-				System.exit(1);
+<span class="nc" id="L142">			String s = XmlUtil.serialize(library);</span>
+<span class="nc" id="L143">			System.out.println(s);</span>
+<span class="nc" id="L144">			try (FileOutputStream fos = new FileOutputStream(globalStateFile);</span>
+<span class="nc" id="L145">					BufferedWriter writer = new BufferedWriter(new OutputStreamWriter(fos, &quot;UTF-8&quot;))) {</span>
+<span class="nc" id="L146">				writer.write(s);</span>
+<span class="nc" id="L147">			} catch (FileNotFoundException e) {</span>
+<span class="nc" id="L148">				e.printStackTrace();</span>
+<span class="nc" id="L149">				System.exit(1);</span>
+<span class="nc" id="L150">			} catch (IOException e) {</span>
+<span class="nc" id="L151">				e.printStackTrace();</span>
+<span class="nc" id="L152">				System.exit(1);</span>
 			}
-		} catch (JsonProcessingException e) {
-			e.printStackTrace();
-			System.err.println(&quot;Malformed document&quot;);
-			throw new WeirdFileException(&quot;Because of an issue, saving application state was not possible.&quot;, e);
+<span class="nc" id="L154">		} catch (JsonProcessingException e) {</span>
+<span class="nc" id="L155">			e.printStackTrace();</span>
+<span class="nc" id="L156">			System.err.println(&quot;Malformed document&quot;);</span>
+<span class="nc" id="L157">			throw new WeirdFileException(&quot;Because of an issue, saving application state was not possible.&quot;, e);</span>
 		} 
-	}
-
-	/**
-	 * Huvudmenyval
-	 */
-<span class="nc" id="L120">	enum MENU_STATE {</span>
-<span class="nc" id="L121">		ADD_ASSET,</span>
-<span class="nc" id="L122">		EDIT_ASSET,</span>
-<span class="nc" id="L123">		REMOVE_ASSET,</span>
-<span class="nc" id="L124">		LIST_ASSETS,</span>
-<span class="nc" id="L125">		SEARCH_ASSET,</span>
-<span class="nc" id="L126">		QUIT;</span>
-
-		/**
-		 *Strängrepresentation
-		 *@return sträng sträng
-		 */
-		@Override
-		public String toString() {
-<span class="nc" id="L134">			return menuRepresentation(this);</span>
-	}
-}
+<span class="nc" id="L159">	}</span>
 
 	/**
 	 * Huvudprogram
@@ -141,347 +164,294 @@ public class Asseteer {
 	 * @throws PEBKAC användarfelsfel
 	 */
 	public static void main(String[] args) throws PEBKAC {
-		Asseteer a = new Asseteer(System.getProperty(&quot;user.home&quot;) + &quot;/asseteer.xml&quot;);
+<span class="nc" id="L167">		Asseteer a = new Asseteer(System.getProperty(&quot;user.home&quot;) + &quot;/asseteer.xml&quot;);</span>
 		try {
-			a.readState();
-		} catch (WeirdFileException e) {
-			e.printStackTrace();
-			System.err.println(&quot;Corrupt file, start from scratch&quot;);
-			a.library = new ArrayList&lt;&gt;();
+<span class="nc" id="L169">			a.readState();</span>
+<span class="nc" id="L170">		} catch (WeirdFileException e) {</span>
+<span class="nc" id="L171">			e.printStackTrace();</span>
+<span class="nc" id="L172">			System.err.println(&quot;Corrupt file, start from scratch&quot;);</span>
+<span class="nc" id="L173">			a.library = new ArrayList&lt;&gt;();</span>
 		}
 		
 		while(true) {
-		        MENU_STATE choice = menuOptionHelper(MENU_STATE.values(), &quot;### MAIN MENU ###&quot;, a.scanner); 
-		        System.out.println(&quot;You selected: \&quot;&quot; + choice + &quot;\&quot;&quot;);
+<span class="nc" id="L177">		        MENU_STATE choice = MenuHelpers.menuOptionHelper(MENU_STATE.values(), &quot;### MAIN MENU ###&quot;, a.scanner); </span>
+<span class="nc" id="L178">		        System.out.println(&quot;You selected: \&quot;&quot; + choice + &quot;\&quot;&quot;);</span>
 		        
-		        switch (choice) {
+<span class="nc bnc" id="L180" title="All 9 branches missed.">		        switch (choice) {</span>
 			        case ADD_ASSET:
-			        	a.MenuOptionAddAsset();
-			        	break;
+<span class="nc" id="L182">			        	a.MenuOptionAddAsset();</span>
+<span class="nc" id="L183">			        	break;</span>
 					case EDIT_ASSET:
-						a.MenuOptionEditAsset();
-						break;
+<span class="nc" id="L185">						a.MenuOptionEditAsset();</span>
+<span class="nc" id="L186">						break;</span>
 					case LIST_ASSETS:
-						a.MenuOptionListAssets();
-						break;
+<span class="nc" id="L188">						a.MenuOptionListAssets();</span>
+<span class="nc" id="L189">						break;</span>
 					case REMOVE_ASSET:
-						a.MenuOptionRemoveAsset();
-						break;
+<span class="nc" id="L191">						a.MenuOptionRemoveAsset();</span>
+<span class="nc" id="L192">						break;</span>
 					case SEARCH_ASSET:
-						a.MenuOptionSearchAsset();
-						break;
+<span class="nc" id="L194">						a.MenuOptionSearchAsset();</span>
+<span class="nc" id="L195">						break;</span>
+					case IMPORTERA_TILLGÅNGAR:
+<span class="nc" id="L197">						System.out.println(&quot;Inte implementerat meny ännu&quot;);</span>
+<span class="nc" id="L198">						break;</span>
+					case INVERTED_SEARCH:
+<span class="nc" id="L200">						System.out.println(&quot;Search term: &quot;);</span>
+<span class="nc" id="L201">						String searchString = a.scanner.nextLine();</span>
+<span class="nc" id="L202">						String s = a.getReverseLookupAsString(searchString);</span>
+<span class="nc bnc" id="L203" title="All 2 branches missed.">						if(s.equals(&quot;&quot;))</span>
+<span class="nc" id="L204">							System.out.println(&quot;No results found for the search term: &quot; + searchString);</span>
+						else
+<span class="nc" id="L206">							System.out.println(s);</span>
+						/*
+						 * var matchingEntries = a.reverse_lookup.entrySet().stream() .filter(entry -&gt;
+						 * entry.getKey().contains(searchString)) .toList();
+						 * 
+						 * if (matchingEntries.isEmpty()) {
+						 * System.out.println(&quot;No results found for the search term: &quot; + searchString);
+						 * } else { matchingEntries.forEach(entry -&gt; { System.out.println(&quot;Key: &quot; +
+						 * entry.getKey()); entry.getValue().forEach(dependency -&gt;
+						 * System.out.println(&quot;  Dependency: &quot; + dependency.toString())); }); }
+						 */
+<span class="nc" id="L217">						break;</span>
 					case QUIT:
-						System.out.println(&quot;Exiting...&quot;);
-						System.exit(0);
-						break;
+<span class="nc" id="L219">						System.out.println(&quot;Exiting...&quot;);</span>
+<span class="nc" id="L220">						System.exit(0);</span>
+<span class="nc" id="L221">						break;</span>
 					default:
-						throw new PEBKAC(&quot;Inmatningsfel&quot;);
+<span class="nc" id="L223">						throw new PEBKAC(&quot;Inmatningsfel&quot;);</span>
 		        }  	
 		}
     }
 
 	private void MenuOptionListAssets() {
-		for(var item : library) {
-			System.out.println(item.toRepresentation());
+<span class="nc bnc" id="L229" title="All 2 branches missed.">		for(var item : library) {</span>
+<span class="nc" id="L230">			System.out.println(item.toRepresentation());</span>
 		}
 		
-	}
+<span class="nc" id="L233">	}</span>
 
 	private void MenuOptionRemoveAsset() {
-		System.out.println(&quot;Enter the name of the asset to remove:&quot;);
-		String name = scanner.nextLine();
-		Asset assetToRemove = null;
-		for (Asset asset : library) {
-			if (asset.getName().equals(name)) {
-				assetToRemove = asset;
-				break;
+<span class="nc" id="L236">		System.out.println(&quot;Enter the name of the asset to remove:&quot;);</span>
+<span class="nc" id="L237">		String name = scanner.nextLine();</span>
+<span class="nc" id="L238">		Asset assetToRemove = null;</span>
+<span class="nc bnc" id="L239" title="All 2 branches missed.">		for (Asset asset : library) {</span>
+<span class="nc bnc" id="L240" title="All 2 branches missed.">			if (asset.getName().equals(name)) {</span>
+<span class="nc" id="L241">				assetToRemove = asset;</span>
+<span class="nc" id="L242">				break;</span>
 			}
 		}
-		if (assetToRemove != null) {
-			library.remove(assetToRemove);
-			System.out.println(&quot;Asset removed.&quot;);
+<span class="nc bnc" id="L245" title="All 2 branches missed.">		if (assetToRemove != null) {</span>
+<span class="nc" id="L246">			library.remove(assetToRemove);</span>
+<span class="nc" id="L247">			System.out.println(&quot;Asset removed.&quot;);</span>
 			try {
-				saveState();
-			} catch (WeirdFileException e) {
-				e.printStackTrace();
-				System.err.println(&quot;Program will halt&quot;);
-				System.exit(1);
+<span class="nc" id="L249">				saveState();</span>
+<span class="nc" id="L250">			} catch (WeirdFileException e) {</span>
+<span class="nc" id="L251">				e.printStackTrace();</span>
+<span class="nc" id="L252">				System.err.println(&quot;Program will halt&quot;);</span>
+<span class="nc" id="L253">				System.exit(1);</span>
 			}
-		} else {
-			System.out.println(&quot;Asset not found.&quot;);
+<span class="nc" id="L255">		} else {</span>
+<span class="nc" id="L256">			System.out.println(&quot;Asset not found.&quot;);</span>
 		}
-	}
+<span class="nc" id="L258">	}</span>
 
 
 	private void MenuOptionSearchAsset() {
-		System.out.println(&quot;Enter a part of the asset to search:&quot;);
-		String s = scanner.nextLine();
-		boolean foundAnything = false;
-		for (Asset asset : library) {
-			if (asset.getId().contains(s)) {
-				foundAnything = true;
-				System.out.println(asset.toRepresentation());
+<span class="nc" id="L262">		System.out.println(&quot;Enter a part of the asset to search:&quot;);</span>
+<span class="nc" id="L263">		String s = scanner.nextLine();</span>
+<span class="nc" id="L264">		boolean foundAnything = false;</span>
+<span class="nc bnc" id="L265" title="All 2 branches missed.">		for (Asset asset : library) {</span>
+<span class="nc bnc" id="L266" title="All 2 branches missed.">			if (asset.getId().contains(s)) {</span>
+<span class="nc" id="L267">				foundAnything = true;</span>
+<span class="nc" id="L268">				System.out.println(asset.toRepresentation());</span>
 				continue;
 			}
 		}
-		if(!foundAnything) {
-			System.out.println(&quot;Asset not found.&quot;);
+<span class="nc bnc" id="L272" title="All 2 branches missed.">		if(!foundAnything) {</span>
+<span class="nc" id="L273">			System.out.println(&quot;Asset not found.&quot;);</span>
 		}
-	}
+<span class="nc" id="L275">	}</span>
 
 	private void MenuOptionEditAsset() {
-		System.out.println(&quot;Enter the name of the asset to edit:&quot;);
-		String name = scanner.nextLine();
-		Asset assetToEdit = null;
-		for (Asset asset : library) {
-			if (asset.getName().equals(name)) {
-				assetToEdit = asset;
-				break;
+<span class="nc" id="L278">		System.out.println(&quot;Enter the name of the asset to edit:&quot;);</span>
+<span class="nc" id="L279">		String name = scanner.nextLine();</span>
+<span class="nc" id="L280">		Asset assetToEdit = null;</span>
+<span class="nc bnc" id="L281" title="All 2 branches missed.">		for (Asset asset : library) {</span>
+<span class="nc bnc" id="L282" title="All 2 branches missed.">			if (asset.getName().equals(name)) {</span>
+<span class="nc" id="L283">				assetToEdit = asset;</span>
+<span class="nc" id="L284">				break;</span>
 			}
 		}
-		if (assetToEdit != null) {
-			System.out.println(&quot;Found Asset\n&quot; + assetToEdit.toRepresentation());
+<span class="nc bnc" id="L287" title="All 2 branches missed.">		if (assetToEdit != null) {</span>
+<span class="nc" id="L288">			System.out.println(&quot;Found Asset\n&quot; + assetToEdit.toRepresentation());</span>
 			
-			System.out.println(&quot;Enter new name (or press Enter to keep current name):&quot;);
-			String newName = scanner.nextLine();
-			if (!newName.isEmpty()) {
-				assetToEdit.setName(newName);
+<span class="nc" id="L290">			System.out.println(&quot;Enter new name (or press Enter to keep current name):&quot;);</span>
+<span class="nc" id="L291">			String newName = scanner.nextLine();</span>
+<span class="nc bnc" id="L292" title="All 2 branches missed.">			if (!newName.isEmpty()) {</span>
+<span class="nc" id="L293">				assetToEdit.setName(newName);</span>
 			}
 
-			if (assetToEdit instanceof SBOM) {
-	            SBOM sbom = (SBOM) assetToEdit;
+<span class="nc bnc" id="L296" title="All 2 branches missed.">			if (assetToEdit instanceof SBOM) {</span>
+<span class="nc" id="L297">	            SBOM sbom = (SBOM) assetToEdit;</span>
 
-	            System.out.println(&quot;Enter new package name (or press Enter to keep current package name):&quot;);
-	            String newPackageName = scanner.nextLine();
+<span class="nc" id="L299">	            System.out.println(&quot;Enter new package name (or press Enter to keep current package name):&quot;);</span>
+<span class="nc" id="L300">	            String newPackageName = scanner.nextLine();</span>
 
-	            System.out.println(&quot;Enter new version (or press Enter to keep current version):&quot;);
-	            String newVersion = scanner.nextLine();
+<span class="nc" id="L302">	            System.out.println(&quot;Enter new version (or press Enter to keep current version):&quot;);</span>
+<span class="nc" id="L303">	            String newVersion = scanner.nextLine();</span>
 
-	            if (!newPackageName.isEmpty() || !newName.isEmpty() || !newVersion.isEmpty()) {
-	                String packageName = !newPackageName.isEmpty() ? newPackageName : sbom.getId().split(&quot;:&quot;)[1].split(&quot;/&quot;)[0];
-	                String nameToUse = !newName.isEmpty() ? newName : sbom.getName();
-	                String versionToUse = !newVersion.isEmpty() ? newVersion : sbom.getId().split(&quot;@&quot;)[1];
+<span class="nc bnc" id="L305" title="All 6 branches missed.">	            if (!newPackageName.isEmpty() || !newName.isEmpty() || !newVersion.isEmpty()) {</span>
+<span class="nc bnc" id="L306" title="All 2 branches missed.">	                String packageName = !newPackageName.isEmpty() ? newPackageName : sbom.getId().split(&quot;:&quot;)[1].split(&quot;/&quot;)[0];</span>
+<span class="nc bnc" id="L307" title="All 2 branches missed.">	                String nameToUse = !newName.isEmpty() ? newName : sbom.getName();</span>
+<span class="nc bnc" id="L308" title="All 2 branches missed.">	                String versionToUse = !newVersion.isEmpty() ? newVersion : sbom.getId().split(&quot;@&quot;)[1];</span>
 
-	                sbom.setId(&quot;pkg:&quot; + packageName + &quot;/&quot; + nameToUse + &quot;@&quot; + versionToUse);
+<span class="nc" id="L310">	                sbom.setId(&quot;pkg:&quot; + packageName + &quot;/&quot; + nameToUse + &quot;@&quot; + versionToUse);</span>
 	                
-	                System.out.println(&quot;Is this a primary application? (y/n)&quot;);
-	                String importantResponse = scanner.nextLine().trim().toLowerCase();
-	                boolean important = importantResponse.equals(&quot;y&quot;) || importantResponse.equals(&quot;yes&quot;);
-	                sbom.setImportant(important);
+<span class="nc" id="L312">	                System.out.println(&quot;Is this a primary application? (y/n)&quot;);</span>
+<span class="nc" id="L313">	                String importantResponse = scanner.nextLine().trim().toLowerCase();</span>
+<span class="nc bnc" id="L314" title="All 4 branches missed.">	                boolean important = importantResponse.equals(&quot;y&quot;) || importantResponse.equals(&quot;yes&quot;);</span>
+<span class="nc" id="L315">	                sbom.setImportant(important);</span>
 	            }
-			}
+<span class="nc" id="L317">			}</span>
 	            
-			else if (assetToEdit instanceof Programvara) {
-				Programvara programvara = (Programvara) assetToEdit;
-				System.out.println(&quot;Enter new owner (or press Enter to keep current owner):&quot;);
-				String newOwner = scanner.nextLine();
-				if (!newOwner.isEmpty()) {
-					programvara.setÄgare(newOwner);
+<span class="nc bnc" id="L319" title="All 2 branches missed.">			else if (assetToEdit instanceof Programvara) {</span>
+<span class="nc" id="L320">				Programvara programvara = (Programvara) assetToEdit;</span>
+<span class="nc" id="L321">				System.out.println(&quot;Enter new owner (or press Enter to keep current owner):&quot;);</span>
+<span class="nc" id="L322">				String newOwner = scanner.nextLine();</span>
+<span class="nc bnc" id="L323" title="All 2 branches missed.">				if (!newOwner.isEmpty()) {</span>
+<span class="nc" id="L324">					programvara.setÄgare(newOwner);</span>
 				}
 
-				System.out.println(&quot;Enter new version (or press Enter to keep current version):&quot;);
-				String programvaraNewVersion = scanner.nextLine();
-				if (!programvaraNewVersion.isEmpty()) {
-					programvara.setVersion(programvaraNewVersion);
+<span class="nc" id="L327">				System.out.println(&quot;Enter new version (or press Enter to keep current version):&quot;);</span>
+<span class="nc" id="L328">				String programvaraNewVersion = scanner.nextLine();</span>
+<span class="nc bnc" id="L329" title="All 2 branches missed.">				if (!programvaraNewVersion.isEmpty()) {</span>
+<span class="nc" id="L330">					programvara.setVersion(programvaraNewVersion);</span>
 				}
 
-				System.out.println(&quot;Enter new supplier (or press Enter to keep current supplier):&quot;);
-				String newSupplier = scanner.nextLine();
-				if (!newSupplier.isEmpty()) {
-					programvara.setLeverantör(newSupplier);
+<span class="nc" id="L333">				System.out.println(&quot;Enter new supplier (or press Enter to keep current supplier):&quot;);</span>
+<span class="nc" id="L334">				String newSupplier = scanner.nextLine();</span>
+<span class="nc bnc" id="L335" title="All 2 branches missed.">				if (!newSupplier.isEmpty()) {</span>
+<span class="nc" id="L336">					programvara.setLeverantör(newSupplier);</span>
 				}
 			}
 
-			System.out.println(&quot;Asset updated.&quot;);
+<span class="nc" id="L340">			System.out.println(&quot;Asset updated.&quot;);</span>
 			try {
-				saveState();
-			} catch (WeirdFileException e) {
-				e.printStackTrace();
-				System.exit(1);
+<span class="nc" id="L342">				saveState();</span>
+<span class="nc" id="L343">			} catch (WeirdFileException e) {</span>
+<span class="nc" id="L344">				e.printStackTrace();</span>
+<span class="nc" id="L345">				System.exit(1);</span>
 			}
-		} else {
-			System.out.println(&quot;Asset not found.&quot;);
+<span class="nc" id="L347">		} else {</span>
+<span class="nc" id="L348">			System.out.println(&quot;Asset not found.&quot;);</span>
 		}
-	}
+<span class="nc" id="L350">	}</span>
 
 	private void MenuOptionAddAsset() throws PEBKAC {
-<span class="nc" id="L308">		enum ASSET_TYPES{</span>
-<span class="nc" id="L309">			PROGRAMVARA, </span>
-<span class="nc" id="L310">			SBOM,</span>
-<span class="nc" id="L311">			CANCEL</span>
-		}
-		
-		System.out.println(&quot;Add Asset&quot;);
+<span class="nc" id="L353">		System.out.println(&quot;Add Asset&quot;);</span>
 
-		var assetType = menuOptionHelper(ASSET_TYPES.values(), &quot;Add asset of which type?&quot;, scanner);
-		switch(assetType) {
+<span class="nc" id="L355">		var assetType = MenuHelpers.menuOptionHelper(ASSET_TYPES.values(), &quot;Add asset of which type?&quot;, scanner);</span>
+<span class="nc bnc" id="L356" title="All 4 branches missed.">		switch(assetType) {</span>
 		case PROGRAMVARA:
-			Programvara programvara = new Programvara();
+<span class="nc" id="L358">			Programvara programvara = new Programvara();</span>
 			
-			System.out.println(&quot;Name:&quot;);
-			String programName = scanner.nextLine();
-			programvara.setName(programName);
+<span class="nc" id="L360">			System.out.println(&quot;Name:&quot;);</span>
+<span class="nc" id="L361">			String programName = scanner.nextLine();</span>
+<span class="nc" id="L362">			programvara.setName(programName);</span>
 			
-			System.out.println(&quot;Owner:&quot;);
-			String programOwner = scanner.nextLine();
-			programvara.setÄgare(programOwner);
+<span class="nc" id="L364">			System.out.println(&quot;Owner:&quot;);</span>
+<span class="nc" id="L365">			String programOwner = scanner.nextLine();</span>
+<span class="nc" id="L366">			programvara.setÄgare(programOwner);</span>
 			
-			System.out.println(&quot;Version:&quot;);
-			String programVersion = scanner.nextLine();
-			programvara.setVersion(programVersion);
+<span class="nc" id="L368">			System.out.println(&quot;Version:&quot;);</span>
+<span class="nc" id="L369">			String programVersion = scanner.nextLine();</span>
+<span class="nc" id="L370">			programvara.setVersion(programVersion);</span>
 			
-			System.out.println(&quot;Supplier:&quot;);
-			String programSupplier = scanner.nextLine();
-			programvara.setLeverantör(programSupplier);
+<span class="nc" id="L372">			System.out.println(&quot;Supplier:&quot;);</span>
+<span class="nc" id="L373">			String programSupplier = scanner.nextLine();</span>
+<span class="nc" id="L374">			programvara.setLeverantör(programSupplier);</span>
 			
-			addDependencyMenuAction(programvara);
+<span class="nc" id="L376">			addDependencyMenuAction(programvara);</span>
 						
-			library.add(programvara);
+<span class="nc" id="L378">			library.add(programvara);</span>
 			try {
-				saveState();
-			} catch (WeirdFileException e) {
-				e.printStackTrace();
-				System.exit(1);
+<span class="nc" id="L380">				saveState();</span>
+<span class="nc" id="L381">			} catch (WeirdFileException e) {</span>
+<span class="nc" id="L382">				e.printStackTrace();</span>
+<span class="nc" id="L383">				System.exit(1);</span>
 			}
-			break;
+<span class="nc" id="L385">			break;</span>
 		case SBOM:
-			SBOM sbom = new SBOM();			
-			System.out.println(&quot;Package:&quot;);
-			String packageName = scanner.nextLine();
+<span class="nc" id="L387">			SBOM sbom = new SBOM();			</span>
+<span class="nc" id="L388">			System.out.println(&quot;Package:&quot;);</span>
+<span class="nc" id="L389">			String packageName = scanner.nextLine();</span>
 			
-			System.out.println(&quot;Name:&quot;);
+<span class="nc" id="L391">			System.out.println(&quot;Name:&quot;);</span>
 			
-			String name = scanner.nextLine();
+<span class="nc" id="L393">			String name = scanner.nextLine();</span>
 			
-			System.out.println(&quot;Version:&quot;);
-			String version = scanner.nextLine();
+<span class="nc" id="L395">			System.out.println(&quot;Version:&quot;);</span>
+<span class="nc" id="L396">			String version = scanner.nextLine();</span>
 			
-			System.out.println(&quot;Is this a primary application?&quot;);
-			boolean important = scanner.nextBoolean();
+<span class="nc" id="L398">			System.out.println(&quot;Is this a primary application?&quot;);</span>
+<span class="nc" id="L399">			boolean important = scanner.nextBoolean();</span>
 			
-			sbom.setName(name);
-			sbom.setImportant(important);
-			sbom.setId(&quot;pkg:&quot; + packageName + &quot;/&quot; + name + &quot;@&quot; + version);
+<span class="nc" id="L401">			sbom.setName(name);</span>
+<span class="nc" id="L402">			sbom.setImportant(important);</span>
+<span class="nc" id="L403">			sbom.setId(&quot;pkg:&quot; + packageName + &quot;/&quot; + name + &quot;@&quot; + version);</span>
 			
-			addDependencyMenuAction(sbom);
+<span class="nc" id="L405">			addDependencyMenuAction(sbom);</span>
 			
-			library.add(sbom);
+<span class="nc" id="L407">			library.add(sbom);</span>
 			try {
-				saveState();
-			} catch (WeirdFileException e) {
-				e.printStackTrace();
-				System.exit(1);
+<span class="nc" id="L409">				saveState();</span>
+<span class="nc" id="L410">			} catch (WeirdFileException e) {</span>
+<span class="nc" id="L411">				e.printStackTrace();</span>
+<span class="nc" id="L412">				System.exit(1);</span>
 			}
-			break;
+<span class="nc" id="L414">			break;</span>
 			
 		case CANCEL:
-			return;
+<span class="nc" id="L417">			return;</span>
 		}
-	}
+<span class="nc" id="L419">	}</span>
 
 	/**
 	 * Helper method
 	 * @param asset asset to add
 	 */
 	private void addDependencyMenuAction(Asset asset) {
-		System.out.println(&quot;Would you like to add a dependency? (y/n)&quot;);
-		String addDependencyResponse = scanner.nextLine().trim().toLowerCase();
-		boolean addDependency = addDependencyResponse.equals(&quot;y&quot;) || addDependencyResponse.equals(&quot;yes&quot;);
+<span class="nc" id="L426">		System.out.println(&quot;Would you like to add a dependency? (y/n)&quot;);</span>
+<span class="nc" id="L427">		String addDependencyResponse = scanner.nextLine().trim().toLowerCase();</span>
+<span class="nc bnc" id="L428" title="All 4 branches missed.">		boolean addDependency = addDependencyResponse.equals(&quot;y&quot;) || addDependencyResponse.equals(&quot;yes&quot;);</span>
 		
-		while(addDependency) {
-			System.out.println(&quot;Enter id of dependency:&quot;);
-			String newdep = scanner.nextLine();
-			System.out.println(&quot;New Dep: '&quot; + newdep + &quot;'&quot;);
-			Dependency dependency = new Dependency(newdep);
-			asset.addDependency(dependency);
+<span class="nc bnc" id="L430" title="All 2 branches missed.">		while(addDependency) {</span>
+<span class="nc" id="L431">			System.out.println(&quot;Enter id of dependency:&quot;);</span>
+<span class="nc" id="L432">			String newdep = scanner.nextLine();</span>
+<span class="nc" id="L433">			System.out.println(&quot;New Dep: '&quot; + newdep + &quot;'&quot;);</span>
+<span class="nc" id="L434">			Dependency dependency = new Dependency(newdep);</span>
+<span class="nc" id="L435">			asset.addDependency(dependency);</span>
 			
-			// A :- B --&gt; B :- A
-			
-			if(!reverse_lookup.containsKey(dependency.toString())) {
-				reverse_lookup.put(dependency.toString(), new ArrayList&lt;Dependency&gt;());
-			}
-			reverse_lookup.get(dependency.toString()).add(new Dependency(asset));
-			
-			System.out.println(&quot;Would you like to add a dependency? (y/n)&quot;);
-			addDependencyResponse = scanner.nextLine().trim().toLowerCase();
-			addDependency = addDependencyResponse.equals(&quot;y&quot;) || addDependencyResponse.equals(&quot;yes&quot;);
-
+<span class="nc" id="L437">			System.out.println(&quot;Would you like to add a dependency? (y/n)&quot;);</span>
+<span class="nc" id="L438">			addDependencyResponse = scanner.nextLine().trim().toLowerCase();</span>
+<span class="nc bnc" id="L439" title="All 4 branches missed.">			addDependency = addDependencyResponse.equals(&quot;y&quot;) || addDependencyResponse.equals(&quot;yes&quot;);</span>
 		}
-	}
+		
+<span class="nc" id="L442">		updateReverseLookup();</span>
+<span class="nc" id="L443">	}</span>
 	
-	/**
-	 * Helper method transforming enum name to a nice string that can be used in menus.
-	 * @param e enum
-	 * @return ADD_ASSET --&gt; Add asset
-	 */
-	private static String menuRepresentation(Enum&lt;?&gt; e) {
-		return e.name().length() == 1? e.name().toUpperCase() : e.name().substring(0, 1).toUpperCase() + e.name().substring(1).toLowerCase().replaceAll(&quot;_&quot;, &quot; &quot;);
-	}
+	
 	
 	/**
 	 * Standardkonstruktor
 	 */
-	public Asseteer() {
-		library = new ArrayList&lt;Asset&gt;();
-		reverse_lookup = new HashMap&lt;&gt;();
-		scanner = new Scanner(System.in);
-	}
+<span class="nc" id="L450">	public Asseteer() {</span>
+<span class="nc" id="L451">		library = new ArrayList&lt;Asset&gt;();</span>
+<span class="nc" id="L452">		reverse_lookup = new HashMap&lt;&gt;();</span>
+<span class="nc" id="L453">		scanner = new Scanner(System.in);</span>
+<span class="nc" id="L454">	}</span>
 
-    // GPT:s förslag E[] enumValues, hade helst velat skicka in typen istället, men orkar inte gräva just nu...
-	// Vore intressant att diskutera alternativ vid tillfälle.
-    /**
-     * Use: {@code var foo = menuOptionHelper(MY_ENUM.values(), &quot;My Menu&quot;, scanner)}
-     * &lt;p&gt;
-     * This returns an actual enum value that can be used in a switch statement.
-     * &lt;p&gt;
-     * &lt;pre&gt;
-     * My Menu
-     * 1 foo
-     * 2 bar
-     * 3 baz
-     * &lt;/pre&gt;
-     * @param &lt;E&gt; specific enum type
-     * @param enumValues enum values
-     * @param menuName top display 
-     * @param scanner e.g. System.in
-     * @return the specific enum value chosen
-     * @throws PEBKAC 
-     */
-    private static &lt;E extends Enum&lt;E&gt;&gt; E menuOptionHelper(E[] enumValues, String menuName, Scanner scanner) throws PEBKAC {
-        boolean validInput = false;
-        int choice = -1;
-
-        while (!validInput) {
-            System.out.println(menuName);
-            for (int i = 0; i &lt; enumValues.length; i++) {
-                System.out.println(&quot;(&quot; + (i + 1) + &quot;)\t&quot; + enumValues[i]);
-            }
-
-            try {
-                System.out.print(&quot;Enter your choice (1 to &quot; + enumValues.length + &quot;): &quot;);
-                choice = scanner.nextInt();
-                scanner.nextLine();
-                choice--; // Convert to zero-based index
-
-                if (choice &gt;= 0 &amp;&amp; choice &lt; enumValues.length) {
-                    validInput = true;
-                    E selectedEnum = enumValues[choice];
-                    return selectedEnum;
-                } else {
-                    System.out.println(&quot;Invalid choice. Please enter a number between 1 and &quot; + enumValues.length + &quot;.&quot;);
-                    throw new PEBKAC(&quot;That is not a correct choice.&quot;);
-                }
-            } catch (InputMismatchException e) {
-                if (scanner.hasNext()) {
-                    if(scanner.nextLine().equalsIgnoreCase(&quot;q&quot;)) {
-                    	System.out.println(&quot;User halted program&quot;);
-                    	System.exit(0);
-                    }
-                    throw new PEBKAC(&quot;Invalid input. Please enter an integer.&quot;, e);
-                }
-            }
-        }
-		return null;
-	    }
 	}
 </pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.8.12.202403310830</span></div></body></html>
