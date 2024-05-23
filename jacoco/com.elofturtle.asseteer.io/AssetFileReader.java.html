@@ -1,6 +1,9 @@
 <?xml version="1.0" encoding="UTF-8"?><!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd"><html xmlns="http://www.w3.org/1999/xhtml" lang="sv"><head><meta http-equiv="Content-Type" content="text/html;charset=UTF-8"/><link rel="stylesheet" href="../jacoco-resources/report.css" type="text/css"/><link rel="shortcut icon" href="../jacoco-resources/report.gif" type="image/gif"/><title>AssetFileReader.java</title><link rel="stylesheet" href="../jacoco-resources/prettify.css" type="text/css"/><script type="text/javascript" src="../jacoco-resources/prettify.js"></script></head><body onload="window['PR_TAB_WIDTH']=4;prettyPrint()"><div class="breadcrumb" id="breadcrumb"><span class="info"><a href="../jacoco-sessions.html" class="el_session">Sessions</a></span><a href="../index.html" class="el_report">Asseteer</a> &gt; <a href="index.source.html" class="el_package">com.elofturtle.asseteer.io</a> &gt; <span class="el_source">AssetFileReader.java</span></div><h1>AssetFileReader.java</h1><pre class="source lang-java linenums">package com.elofturtle.asseteer.io;
 
+import java.nio.file.Files;
+import java.nio.file.Paths;
 import java.util.ArrayList;
+import com.elofturtle.asseteer.exception.*;
 
 import org.jline.builtins.Completers.FileNameCompleter;
 import org.jline.reader.LineReader;
@@ -13,9 +16,22 @@ import com.elofturtle.asseteer.model.Asset;
 /**
  * Subclasses of Asset reading from a standard format may choose to implement an importer class.
  */
-<span class="nc" id="L16">public abstract class AssetFileReader {</span>
+public abstract class AssetFileReader {
 	
-	public abstract ArrayList&lt;Asset&gt; readFromFile(String filePath);
+	/**
+	 * Standardkonstruktor
+	 */
+<span class="fc" id="L24">	public AssetFileReader() {</span>
+		
+<span class="fc" id="L26">	};</span>
+	
+	/**
+	 * Deserialiserar externa format för import.
+	 * @param filePath filsökväg
+	 * @return en lista med Assets
+	 * @throws WeirdFileException filfel
+	 */
+	public abstract ArrayList&lt;Asset&gt; readFromFile(String filePath) throws WeirdFileException;
 	
 	/**
 	 * Helper class that assists the user with autocompletion when creating a file path.
@@ -23,16 +39,19 @@ import com.elofturtle.asseteer.model.Asset;
 	 */
 	protected static String filePathHelper() {
 		try {
-<span class="nc" id="L26">	        Terminal terminal = TerminalBuilder.terminal();</span>
-<span class="nc" id="L27">	        LineReader lineReader = LineReaderBuilder.builder()</span>
-<span class="nc" id="L28">	                .terminal(terminal)</span>
-<span class="nc" id="L29">	                .completer(new FileNameCompleter())</span>
-<span class="nc" id="L30">	                .build();</span>
-<span class="nc" id="L31">	        String filePath = lineReader.readLine(&quot;Enter file path: &quot;);</span>
-<span class="nc" id="L32">	        return filePath;</span>
-<span class="nc" id="L33">	    } catch (Exception e) {</span>
-<span class="nc" id="L34">	        e.printStackTrace();</span>
-<span class="nc" id="L35">	        return null;</span>
+<span class="nc" id="L42">	        Terminal terminal = TerminalBuilder.terminal();</span>
+<span class="nc" id="L43">	        LineReader lineReader = LineReaderBuilder.builder()</span>
+<span class="nc" id="L44">	                .terminal(terminal)</span>
+<span class="nc" id="L45">	                .completer(new FileNameCompleter())</span>
+<span class="nc" id="L46">	                .build();</span>
+<span class="nc" id="L47">	        String filePath = lineReader.readLine(&quot;Enter file path: &quot;);</span>
+<span class="nc bnc" id="L48" title="All 2 branches missed.">	        if(Files.notExists(Paths.get(filePath))) {</span>
+<span class="nc" id="L49">	        	throw new PEBKAC(&quot;That thing you entered isn't a file-path&quot;);</span>
+	        };
+<span class="nc" id="L51">	        return filePath;</span>
+<span class="nc" id="L52">	    } catch (Exception e) {</span>
+<span class="nc" id="L53">	        e.printStackTrace();</span>
+<span class="nc" id="L54">	        return null;</span>
 	    }
 	}
 }

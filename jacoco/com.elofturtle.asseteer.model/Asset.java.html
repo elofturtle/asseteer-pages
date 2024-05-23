@@ -61,34 +61,37 @@ public abstract class Asset implements Comparable&lt;Asset&gt; {
 	 * in från fil. Därför har vi en separat metod som bara ska användas vid {@link com.elofturtle.asseteer.io.XmlUtil deserialisering}. 
 	 * @deprecated kommer troligtvis att deprekeras i version 2.
 	 */
+	@Deprecated
 	@JsonSetter(&quot;id&quot;)
     public void setIdFromDeserialization(String id) {
-<span class="nc" id="L66">        this.id = id;</span>
-<span class="nc" id="L67">    }</span>
+<span class="fc" id="L67">        this.id = id;</span>
+<span class="fc" id="L68">    }</span>
 	
 	/**
-	 * @return  Är detta en toppnivåapplikation med en intern förvaltare?
+	 * Är detta en toppnivåapplikation med en intern förvaltare?
+	 * @return  important är det en förvaltad applikation?
 	 */
 	public boolean isImportant() {
-<span class="nc" id="L73">		return important;</span>
+<span class="fc" id="L75">		return important;</span>
 	}
 
 	/**
-	 * @param important
 	 * Om satt så betecknar det att detta är en Asset som är viktig, och troligtvis har en intern förvaltare/intressent.
+	 * @param important är det en förvaltad applikation?
+	 * 
 	 */
 	public void setImportant(boolean important) {
-<span class="nc" id="L81">		this.important = important;</span>
-<span class="nc" id="L82">	}</span>
+<span class="fc" id="L84">		this.important = important;</span>
+<span class="fc" id="L85">	}</span>
 
 	/**
-	 * @return namn
 	 * Namn är en läsvänlig egenskap.
 	 * Det kan finnas dubletter, t.ex. två versioner av samma applikation.
+	 * @return namn
 	 * @see #toRepresentation() 
 	 */
 	public String getName() {
-<span class="nc" id="L91">		return name;</span>
+<span class="fc" id="L94">		return name;</span>
 	}
 	
 	/**
@@ -97,7 +100,7 @@ public abstract class Asset implements Comparable&lt;Asset&gt; {
 	@Generated(&quot;none&quot;)
 	@Override
 	public int hashCode() { //hash och equals tydligen viktiga om man vill ha saker i listor, compareTo() inte tillräckligt.
-<span class="nc" id="L100">		return Objects.hash(id);</span>
+<span class="fc" id="L103">		return Objects.hash(id);</span>
 	}
 
 	/**
@@ -106,116 +109,121 @@ public abstract class Asset implements Comparable&lt;Asset&gt; {
 	@Generated(&quot;none&quot;)
 	@Override
 	public boolean equals(Object obj) {
-<span class="nc bnc" id="L109" title="All 2 branches missed.">		if (this == obj)</span>
-<span class="nc" id="L110">			return true;</span>
-<span class="nc bnc" id="L111" title="All 2 branches missed.">		if (obj == null)</span>
-<span class="nc" id="L112">			return false;</span>
-<span class="nc bnc" id="L113" title="All 2 branches missed.">		if (getClass() != obj.getClass())</span>
-<span class="nc" id="L114">			return false;</span>
-<span class="nc" id="L115">		Asset other = (Asset) obj;</span>
-<span class="nc" id="L116">		return Objects.equals(id, other.id);</span>
+<span class="pc bpc" id="L112" title="1 of 2 branches missed.">		if (this == obj)</span>
+<span class="nc" id="L113">			return true;</span>
+<span class="pc bpc" id="L114" title="1 of 2 branches missed.">		if (obj == null)</span>
+<span class="nc" id="L115">			return false;</span>
+<span class="pc bpc" id="L116" title="1 of 2 branches missed.">		if (getClass() != obj.getClass())</span>
+<span class="nc" id="L117">			return false;</span>
+<span class="fc" id="L118">		Asset other = (Asset) obj;</span>
+<span class="fc" id="L119">		return Objects.equals(id, other.id);</span>
 	}
 
 	/**
+	 * Returnerar objektets id.
 	 * @return id (purl)
 	 */
 	public String getId() {
-<span class="nc" id="L123">		return id;</span>
+<span class="fc" id="L127">		return id;</span>
 	}
 
 	
 	/**
-	 * @param id
 	 * Varje asset identifieras av ett id, t.ex. purl.
 	 * För närvarande innehåller den klassnamnet för unikhet mellan subklasse, vilket
 	 * konkurrerar med {@link #assetType} så det måste refaktoreras vid tillfälle.
+	 * @param id id.
 	 */
 	public void setId(String id) {
-<span class="nc" id="L134">		this.id = this.getClass().getSimpleName() + &quot;:&quot; + id;</span>
-<span class="nc" id="L135">	}</span>
+<span class="fc" id="L138">		this.id = this.getClass().getSimpleName() + &quot;:&quot; + id;</span>
+<span class="fc" id="L139">	}</span>
 
 	/**
+	 * Eventuella beroenden till din Asset.
 	 * @return en referens till kända beroenden.
 	 */
 	public ArrayList&lt;Dependency&gt; getDependencies() {
-<span class="nc" id="L141">		return dependencies;</span>
+<span class="fc bfc" id="L146" title="All 2 branches covered.">		if(dependencies == null)</span>
+<span class="fc" id="L147">			dependencies = new ArrayList&lt;&gt;();</span>
+<span class="fc" id="L148">		return dependencies;</span>
 	}
 
 	/**
-	 * @param dependencies
 	 * Koppla en extern lista med beroenden till en Asset.
 	 * Adderar inte till existerande beroenden!
+	 * @param dependencies beroenden
 	 */
 	public void setDependencies(ArrayList&lt;Dependency&gt; dependencies) {
 		// Möjliggör manipulering av internt state, borde kanske kopiera istället.
-<span class="nc" id="L151">		this.dependencies = dependencies;</span>
-<span class="nc" id="L152">	}</span>
+<span class="fc" id="L158">		this.dependencies = dependencies;</span>
+<span class="fc" id="L159">	}</span>
 	
 	
 	/**
-	 * @param d
 	 * Addera en {@link com.elofturtle.asseteer.model.Dependency Dependency} till Asset.
+	 * @param d beroendet som ska länkas in
 	 */
 	public void addDependency(Dependency d) {
-<span class="nc bnc" id="L160" title="All 2 branches missed.">		if(dependencies == null) {</span>
-<span class="nc" id="L161">			dependencies = new ArrayList&lt;Dependency&gt;();</span>
+<span class="fc bfc" id="L167" title="All 2 branches covered.">		if(dependencies == null) {</span>
+<span class="fc" id="L168">			dependencies = new ArrayList&lt;Dependency&gt;();</span>
 		}
-<span class="nc bnc" id="L163" title="All 2 branches missed.">		if(!dependencies.contains(d)) {</span>
-<span class="nc" id="L164">			dependencies.add(d);</span>
+<span class="fc bfc" id="L170" title="All 2 branches covered.">		if(!dependencies.contains(d)) {</span>
+<span class="fc" id="L171">			dependencies.add(d);</span>
 		}
-<span class="nc" id="L166">	}</span>
+<span class="fc" id="L173">	}</span>
 	
 	/**
-	 * @param a
 	 * Addera en {@link com.elofturtle.asseteer.model.Asset Asset} som beroende till denna Asset.
+	 * @param a beroendet som ska länkas in
 	 */
 	public void addDependency(Asset a) {
-<span class="nc" id="L173">		addDependency(new Dependency(a));</span>
-<span class="nc" id="L174">	}</span>
+<span class="fc" id="L180">		addDependency(new Dependency(a));</span>
+<span class="fc" id="L181">	}</span>
 	
 	/**
-	 * @param d
 	 * Avlägsna ett beroende.
+	 * @param d beroendet som ska avlägsnas
 	 */
 	public void removeDependency(Dependency d) {
-<span class="nc" id="L181">		dependencies.remove(d);</span>
+<span class="fc" id="L188">		dependencies.remove(d);</span>
 		
-<span class="nc" id="L183">	}</span>
+<span class="fc" id="L190">	}</span>
 	
 	/**
-	 * @param a
 	 * Avlägsna ett beroende.
+	 * @param a beroendet som ska avlägsnas
 	 */
 	public void removeDependency(Asset a) {
-<span class="nc" id="L190">		dependencies.remove(new Dependency(a));</span>
-<span class="nc" id="L191">	}</span>
+<span class="fc" id="L197">		dependencies.remove(new Dependency(a));</span>
+<span class="fc" id="L198">	}</span>
 
 	/**
-	 * @param name
 	 * Sätt visningsnamn på Asset.
+	 * @param name nya namnet
 	 */
 	public void setName(String name) {
-<span class="nc" id="L198">		this.name = name;</span>
-<span class="nc" id="L199">	}</span>
+<span class="fc" id="L205">		this.name = name;</span>
+<span class="fc" id="L206">	}</span>
 	
 	/**
 	 * Behövs för {@link com.elofturtle.asseteer.io.XmlUtil#deserialize(String) deserialisering}.
 	 * Kräver att alla attribut sätts manuellt, förutom {@link #assetType}.
 	 */
-<span class="nc" id="L205">	public Asset(){</span>
-<span class="nc" id="L206">		name = null;</span>
-<span class="nc" id="L207">		dependencies = null;</span>
-<span class="nc" id="L208">		important = false;</span>
-<span class="nc" id="L209">		setAssetType();</span>
-<span class="nc" id="L210">	}</span>
+<span class="fc" id="L212">	public Asset(){</span>
+<span class="fc" id="L213">		name = null;</span>
+<span class="fc" id="L214">		dependencies = null;</span>
+<span class="fc" id="L215">		important = false;</span>
+<span class="fc" id="L216">		setAssetType();</span>
+<span class="fc" id="L217">	}</span>
 	
 	/**
+	 * Motsvarande Dependency-referens för objektet.
 	 * @return {@link com.elofturtle.asseteer.model.Dependency Dependency} som refererar till {@link #id} för objektet.
 	 * &lt;br/&gt;	  
 	 * Eftersom det används mycket i länkar, men vi egentligen arbetar med Assets, så är det bekvämt att kunna returnera referensen från objektet istället för att konvertera det manuellt.
 	 */
 	public Dependency toDependency() {
-<span class="nc" id="L218">		return new Dependency(this);</span>
+<span class="fc" id="L226">		return new Dependency(this);</span>
 	}
 	
 	/**
@@ -224,30 +232,31 @@ public abstract class Asset implements Comparable&lt;Asset&gt; {
 	 * @param dependencies Lista med {@link #dependencies beroenden}.
 	 * 
 	 */
-<span class="nc" id="L227">	public Asset(String name, ArrayList&lt;Dependency&gt; dependencies) {</span>
-<span class="nc" id="L228">		this.name = name;</span>
-<span class="nc" id="L229">		this.dependencies = dependencies;</span>
-<span class="nc" id="L230">		important = false;</span>
-<span class="nc" id="L231">	}</span>
+<span class="fc" id="L235">	public Asset(String name, ArrayList&lt;Dependency&gt; dependencies) {</span>
+<span class="fc" id="L236">		this.name = name;</span>
+<span class="fc" id="L237">		this.dependencies = dependencies;</span>
+<span class="fc" id="L238">		important = false;</span>
+<span class="fc" id="L239">	}</span>
 	
 	/**
 	 * Grundläggande konstruktor. &lt;p&gt;
 	 * Andra parametrar måste sättas via setters för att objektet ska vara användbart.
 	 * @param name Objektets {@link #name}.
 	 */
-<span class="nc" id="L238">	public Asset(String name) {</span>
-<span class="nc" id="L239">		this.name = name;</span>
-<span class="nc" id="L240">		this.dependencies = null;</span>
-<span class="nc" id="L241">	}</span>
+<span class="fc" id="L246">	public Asset(String name) {</span>
+<span class="fc" id="L247">		this.name = name;</span>
+<span class="fc" id="L248">		this.dependencies = null;</span>
+<span class="fc" id="L249">	}</span>
 	
 	/**
 	 *{@inheritDoc}
 	 *&lt;p&gt;
 	 *Returnerar {@link #name namn} på ojektet.
+	 *@return en beskrivande sträng.
 	 */
 	@Override
 	public String toString() {
-<span class="nc" id="L250">		return this.name;</span>
+<span class="fc" id="L259">		return this.name;</span>
 	}
 	
 	/**
@@ -267,25 +276,27 @@ public abstract class Asset implements Comparable&lt;Asset&gt; {
 	 *&lt;/pre&gt;
 	 */
 	public String toRepresentation() {
-<span class="nc" id="L270">		StringBuilder str = new StringBuilder();</span>
-<span class="nc" id="L271">		str.append(name + &quot; : &quot; + id);</span>
-<span class="nc bnc" id="L272" title="All 4 branches missed.">		if(dependencies != null &amp;&amp; dependencies.size() != 0) {</span>
-<span class="nc" id="L273">			str.append(&quot;\n\tDependencies\n&quot;);</span>
-<span class="nc bnc" id="L274" title="All 2 branches missed.">			for (var d : dependencies) {</span>
-<span class="nc" id="L275">				str.append(&quot;\t\t&quot; + d + &quot;\n&quot;);</span>
-<span class="nc" id="L276">			}</span>
+<span class="fc" id="L279">		StringBuilder str = new StringBuilder();</span>
+<span class="fc" id="L280">		str.append(name + &quot; : &quot; + id);</span>
+<span class="fc bfc" id="L281" title="All 4 branches covered.">		if(dependencies != null &amp;&amp; dependencies.size() != 0) {</span>
+<span class="fc" id="L282">			str.append(&quot;\n\tDependencies\n&quot;);</span>
+<span class="fc bfc" id="L283" title="All 2 branches covered.">			for (var d : dependencies) {</span>
+<span class="fc" id="L284">				str.append(&quot;\t\t&quot; + d + &quot;\n&quot;);</span>
+<span class="fc" id="L285">			}</span>
 		}
-<span class="nc" id="L278">		return str.toString();</span>
+<span class="fc" id="L287">		return str.toString();</span>
 	}
 	
 	/**
 	 * {@inheritDoc}
 	 * Alla klasser får ansvaret att generera ett globalt unikt ID som kan användas vid jämförelser.
-	 * &lt;p&gt;Borde integrera klasstyp här på sikt.
+	 * &lt;p&gt;
+	 * Borde integrera klasstyp här på sikt.
+	 * @return en helstalsindikator som kan användas för sortering.
 	 */
 	@Override
 	public int compareTo(Asset o) {
-<span class="nc" id="L288">		return this.id.compareTo(o.id);</span>
+<span class="fc" id="L299">		return this.id.compareTo(o.id);</span>
 	}
 
 	/**
@@ -293,15 +304,15 @@ public abstract class Asset implements Comparable&lt;Asset&gt; {
 	 * @return {@link #assetType} 
 	 */
 	public String getAssetType() {
-<span class="nc" id="L296">		return assetType;</span>
+<span class="fc" id="L307">		return assetType;</span>
 	}
 
 	/**
 	 * Behövs för {@link com.elofturtle.asseteer.io.XmlUtil XmlUtil}.
 	 */
 	public void setAssetType() {
-<span class="nc" id="L303">		assetType = this.getClass().getSimpleName();</span>
-<span class="nc" id="L304">	}</span>
+<span class="fc" id="L314">		assetType = this.getClass().getSimpleName();</span>
+<span class="fc" id="L315">	}</span>
 
 }
 </pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.8.12.202403310830</span></div></body></html>

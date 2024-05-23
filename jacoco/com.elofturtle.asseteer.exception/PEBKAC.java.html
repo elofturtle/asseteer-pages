@@ -1,0 +1,63 @@
+<?xml version="1.0" encoding="UTF-8"?><!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd"><html xmlns="http://www.w3.org/1999/xhtml" lang="sv"><head><meta http-equiv="Content-Type" content="text/html;charset=UTF-8"/><link rel="stylesheet" href="../jacoco-resources/report.css" type="text/css"/><link rel="shortcut icon" href="../jacoco-resources/report.gif" type="image/gif"/><title>PEBKAC.java</title><link rel="stylesheet" href="../jacoco-resources/prettify.css" type="text/css"/><script type="text/javascript" src="../jacoco-resources/prettify.js"></script></head><body onload="window['PR_TAB_WIDTH']=4;prettyPrint()"><div class="breadcrumb" id="breadcrumb"><span class="info"><a href="../jacoco-sessions.html" class="el_session">Sessions</a></span><a href="../index.html" class="el_report">Asseteer</a> &gt; <a href="index.source.html" class="el_package">com.elofturtle.asseteer.exception</a> &gt; <span class="el_source">PEBKAC.java</span></div><h1>PEBKAC.java</h1><pre class="source lang-java linenums">package com.elofturtle.asseteer.exception;
+
+/**
+ * This is a user error exception.
+ * 
+ * Please replace user.
+ */
+public class PEBKAC extends Exception {
+
+	/**
+	 * version
+	 */
+	private static final long serialVersionUID = 1L;
+	/**
+	 * Läggs till alla undantag
+	 */
+<span class="nc" id="L17">	private static String s = &quot;Problem Exist Between Keyboard and Chair&quot;;</span>
+	
+	/**
+	 * exception
+	 */
+	public PEBKAC() {
+<span class="nc" id="L23">		super(s);</span>
+<span class="nc" id="L24">	}</span>
+
+	/**
+	 * exception
+	 * @param message meddelande
+	 */
+	public PEBKAC(String message) {
+<span class="nc" id="L31">		super(s + &quot;\n&quot; + message);</span>
+<span class="nc" id="L32">	}</span>
+
+	/**
+	 * exception
+	 * @param cause orsak
+	 */
+	public PEBKAC(Throwable cause) {
+<span class="nc" id="L39">		super(cause);</span>
+<span class="nc" id="L40">	}</span>
+
+	/**
+	 * exception
+	 * @param message meddelande
+	 * @param cause orsak
+	 */
+	public PEBKAC(String message, Throwable cause) {
+<span class="nc" id="L48">		super(s + &quot;\n&quot; + message, cause);</span>
+<span class="nc" id="L49">	}</span>
+
+	/**
+	 * exception
+	 * @param message meddelande
+	 * @param cause orsak
+	 * @param enableSuppression undertryck
+	 * @param writableStackTrace stacktrace
+	 */
+	public PEBKAC(String message, Throwable cause, boolean enableSuppression, boolean writableStackTrace) {
+<span class="nc" id="L59">		super(s + &quot;\n&quot; + message, cause, enableSuppression, writableStackTrace);</span>
+<span class="nc" id="L60">	}</span>
+
+}
+</pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.8.12.202403310830</span></div></body></html>

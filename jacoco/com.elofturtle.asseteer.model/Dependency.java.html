@@ -1,7 +1,5 @@
 <?xml version="1.0" encoding="UTF-8"?><!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd"><html xmlns="http://www.w3.org/1999/xhtml" lang="sv"><head><meta http-equiv="Content-Type" content="text/html;charset=UTF-8"/><link rel="stylesheet" href="../jacoco-resources/report.css" type="text/css"/><link rel="shortcut icon" href="../jacoco-resources/report.gif" type="image/gif"/><title>Dependency.java</title><link rel="stylesheet" href="../jacoco-resources/prettify.css" type="text/css"/><script type="text/javascript" src="../jacoco-resources/prettify.js"></script></head><body onload="window['PR_TAB_WIDTH']=4;prettyPrint()"><div class="breadcrumb" id="breadcrumb"><span class="info"><a href="../jacoco-sessions.html" class="el_session">Sessions</a></span><a href="../index.html" class="el_report">Asseteer</a> &gt; <a href="index.source.html" class="el_package">com.elofturtle.asseteer.model</a> &gt; <span class="el_source">Dependency.java</span></div><h1>Dependency.java</h1><pre class="source lang-java linenums">package com.elofturtle.asseteer.model;
 
-// Färdigtestad &amp; dokumenterad
-
 import java.util.Objects;
 
 /**
@@ -15,85 +13,91 @@ public class Dependency implements Comparable&lt;Dependency&gt; {
 	 * Den tomma konstruktorn behövs för deserialisering.
 	 * @hidden
 	 */
-<span class="nc" id="L18">	public Dependency() {</span>
-<span class="nc" id="L19">		id = &quot;&quot;;</span>
-<span class="nc" id="L20">	}</span>
+<span class="fc" id="L16">	public Dependency() {</span>
+<span class="fc" id="L17">		id = &quot;&quot;;</span>
+<span class="fc" id="L18">	}</span>
 	
 	/**
 	 * Håller en referens till det unika id:t för en Asset.
-	 * @param id
+	 * @param id id
 	 */
-<span class="nc" id="L26">	public Dependency(String id) {</span>
-<span class="nc" id="L27">		this.id = id;</span>
-<span class="nc" id="L28">	}</span>
+<span class="fc" id="L24">	public Dependency(String id) {</span>
+<span class="fc" id="L25">		this.id = id;</span>
+<span class="fc" id="L26">	}</span>
 
 	
 	/**
 	 * Håller en referens till en Asset via dess id.
-	 * @param a
+	 * @param a asset
 	 */
-<span class="nc" id="L35">	public Dependency(Asset a) {</span>
-<span class="nc" id="L36">		this.id = a.getId();</span>
-<span class="nc" id="L37">	}</span>
+<span class="fc" id="L33">	public Dependency(Asset a) {</span>
+<span class="fc" id="L34">		this.id = a.getId();</span>
+<span class="fc" id="L35">	}</span>
 	
 	
 
 	/**
+	 * Håller referens till en Asset.
 	 * @return referens till en Asset.
 	 */
 	public String getId() {
-<span class="nc" id="L45">		return id;</span>
+<span class="fc" id="L44">		return id;</span>
 	}
 
 	/**
 	 * Sätt id manuellt.
-	 * @param id
+	 * @param id id
 	 */
 	public void setId(String id) {
-<span class="nc bnc" id="L53" title="All 2 branches missed.">		if(id == null) {</span>
-<span class="nc" id="L54">			this.id = &quot;&quot;;</span>
+<span class="fc bfc" id="L52" title="All 2 branches covered.">		if(id == null) {</span>
+<span class="fc" id="L53">			this.id = &quot;&quot;;</span>
 		}else {
-<span class="nc" id="L56">			this.id = id;</span>
+<span class="fc" id="L55">			this.id = id;</span>
 		}
-<span class="nc" id="L58">	}</span>
+<span class="fc" id="L57">	}</span>
 
 	/**
 	 *Skriver ut det unika id:t som refereras.
+	 *@return id id
 	 */
 	@Override
 	public String toString() {
-<span class="nc" id="L65">		return this.id;</span>
+<span class="fc" id="L65">		return this.id;</span>
 	}
 	
 	/**
 	 * id-attributet används för unikhet. 
+	 * @return objektets hash
+	 * @hidden
 	 */
 	@Override
 	public int hashCode() {
-<span class="nc" id="L73">		return Objects.hash(id);</span>
+<span class="fc" id="L75">		return Objects.hash(id);</span>
 	}
 
 	/**
 	 * Bedömer likhet genom att jämföra id:t.
+	 * @return likhetstest
 	 */
 	@Override
 	public boolean equals(Object obj) {
-<span class="nc bnc" id="L81" title="All 2 branches missed.">		if (this == obj)</span>
-<span class="nc" id="L82">			return true;</span>
-<span class="nc bnc" id="L83" title="All 2 branches missed.">		if (obj == null)</span>
-<span class="nc" id="L84">			return false;</span>
-<span class="nc bnc" id="L85" title="All 2 branches missed.">		if (getClass() != obj.getClass())</span>
-<span class="nc" id="L86">			return false;</span>
-<span class="nc" id="L87">		Dependency other = (Dependency) obj;</span>
-<span class="nc" id="L88">		return Objects.equals(id, other.id);</span>
+<span class="fc bfc" id="L84" title="All 2 branches covered.">		if (this == obj)</span>
+<span class="fc" id="L85">			return true;</span>
+<span class="fc bfc" id="L86" title="All 2 branches covered.">		if (obj == null)</span>
+<span class="fc" id="L87">			return false;</span>
+<span class="fc bfc" id="L88" title="All 2 branches covered.">		if (getClass() != obj.getClass())</span>
+<span class="fc" id="L89">			return false;</span>
+<span class="fc" id="L90">		Dependency other = (Dependency) obj;</span>
+<span class="fc" id="L91">		return Objects.equals(id, other.id);</span>
 	}
 
 	/**
 	 *Jämför två Asset-id:n och använder det för att bedöma invärtes ordning.
+	 *@return jämförelse heltal
 	 */
 	@Override
 	public int compareTo(Dependency o) {
-<span class="nc" id="L96">		return this.id.compareTo(o.toString());</span>
+<span class="fc" id="L100">		return this.id.compareTo(o.toString());</span>
 	}
 	
 }

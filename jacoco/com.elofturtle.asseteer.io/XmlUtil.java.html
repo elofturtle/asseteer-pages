@@ -10,7 +10,16 @@ import com.fasterxml.jackson.databind.SerializationFeature;
 import com.fasterxml.jackson.dataformat.xml.ser.ToXmlGenerator;
 
 
-<span class="nc" id="L13">public class XmlUtil {</span>
+/**
+ * Stödklass med metoder för persistering i de tinterna dataformatet.
+ */
+public class XmlUtil {
+	/**
+	 * Default-konstruktor
+	 */
+<span class="fc" id="L20">	public XmlUtil() {</span>
+		
+<span class="fc" id="L22">	}</span>
     /**
      * Konverterar från/till utdataformat för att bearbeta filer.
      * &lt;p&gt;
@@ -20,29 +29,29 @@ import com.fasterxml.jackson.dataformat.xml.ser.ToXmlGenerator;
     private static XmlMapper xmlMapper;
     
     static {
-<span class="nc" id="L23">        xmlMapper = new XmlMapper();</span>
-<span class="nc" id="L24">        xmlMapper.enable(SerializationFeature.INDENT_OUTPUT);</span>
-<span class="nc" id="L25">        xmlMapper.configure(ToXmlGenerator.Feature.WRITE_XML_DECLARATION, true);</span>
-<span class="nc" id="L26">    }</span>
+<span class="fc" id="L32">        xmlMapper = new XmlMapper();</span>
+<span class="fc" id="L33">        xmlMapper.enable(SerializationFeature.INDENT_OUTPUT);</span>
+<span class="fc" id="L34">        xmlMapper.configure(ToXmlGenerator.Feature.WRITE_XML_DECLARATION, true);</span>
+<span class="fc" id="L35">    }</span>
 
     /**
      * Serialiserar en lista med {@link com.elofturtle.asseteer.model.Asset Assets}, för att t.ex. kunna spara till fil.
-     * @param library
+     * @param library en samling Assets
      * @return the result of the parsing
      * @throws JsonProcessingException if an error occurs during parsing
      */
     public static String serialize(ArrayList&lt;Asset&gt; library) throws JsonProcessingException {
-<span class="nc" id="L35">        return xmlMapper.writeValueAsString(library);</span>
+<span class="fc" id="L44">        return xmlMapper.writeValueAsString(library);</span>
     }
 
     /**
      * Deserialiserar en XML-sträng till en lista med {@link com.elofturtle.asseteer.model.Asset Assets}, för att t.ex. kunna läsa från fil.
-     * @param xml
-     * @return
-     * @throws JsonProcessingException
+     * @param xml en sträng som innehåller en XML
+     * @return en lista med Assets
+     * @throws JsonProcessingException om xml:en inte har en korrekt struktur
      */
     public static ArrayList&lt;Asset&gt; deserialize(String xml) throws JsonProcessingException {
-<span class="nc" id="L45">        return xmlMapper.readValue(xml, new TypeReference&lt;ArrayList&lt;Asset&gt;&gt;() {});</span>
+<span class="fc" id="L54">        return xmlMapper.readValue(xml, new TypeReference&lt;ArrayList&lt;Asset&gt;&gt;() {});</span>
     }
 }
 </pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.8.12.202403310830</span></div></body></html>

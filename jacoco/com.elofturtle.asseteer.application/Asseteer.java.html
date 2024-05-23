@@ -3,10 +3,8 @@
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.InputMismatchException;
-import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
-import java.util.Queue;
 import java.util.Scanner;
 
 import java.io.BufferedWriter;
@@ -23,14 +21,35 @@ import com.elofturtle.asseteer.model.Dependency;
 import com.elofturtle.asseteer.model.Programvara;
 import com.elofturtle.asseteer.model.SBOM;
 import com.fasterxml.jackson.core.JsonProcessingException;
+import com.elofturtle.asseteer.exception.PEBKAC;
+import com.elofturtle.asseteer.exception.WeirdFileException;
 import com.elofturtle.asseteer.io.XmlUtil;
 
+/**
+ * Huvudprogrammet
+ */
 public class Asseteer {
+	/**
+	 * Ett bibliotek med Assets
+	 */
 	private ArrayList&lt;Asset&gt; library;
+	/**
+	 * Tabell för omvänd sökning
+	 */
 	private Map&lt;String, List&lt;Dependency&gt;&gt; reverse_lookup;
+	/**
+	 * Här sparas programmets bibliotek mellan körningar
+	 */
 	private String globalStateFile;
+	/**
+	 * Skanner
+	 */
 	public Scanner scanner;
 	
+	/**
+	 * Standardkonstruktor
+	 * @param path sökväg till programkatalog
+	 */
 	public Asseteer(String path) {
 		library = new ArrayList&lt;&gt;();
 		globalStateFile = path;
@@ -38,7 +57,11 @@ public class Asseteer {
 		reverse_lookup = new HashMap&lt;&gt;();
 	}
 	
-	public void readState() {
+	/**
+	 * Läs in programkatalogen, t.ex. vid uppstart.
+	 * @throws WeirdFileException filundantag
+	 */
+	public void readState() throws WeirdFileException {
 		Path filePath = Paths.get(globalStateFile);
 
         try {
@@ -49,19 +72,28 @@ public class Asseteer {
             // Handle IOException
             System.err.println(&quot;An error occurred while reading the file: &quot; + e.getMessage());
             e.printStackTrace();
+            throw new WeirdFileException(&quot;Unable to load application state&quot;, e);
         } catch (SecurityException e) {
             // Handle SecurityException
             System.err.println(&quot;A security error occurred: &quot; + e.getMessage());
+            System.err.println(&quot;Program will exit!&quot;);
             e.printStackTrace();
+            System.exit(1);
         } catch (Exception e) {
             // Handle any other unexpected exceptions
             System.err.println(&quot;An unexpected error occurred: &quot; + e.getMessage());
+            System.err.println(&quot;Program will exit!&quot;);
             e.printStackTrace();
+            System.exit(1);
         }
 		
 	}
 	
-	public void saveState() {
+	/**
+	 * Spara programkatalogen, t.ex. när den har ändrats
+	 * @throws WeirdFileException filundantag
+	 */
+	public void saveState() throws WeirdFileException {
 		try {
 			String s = XmlUtil.serialize(library);
 			System.out.println(s);
@@ -77,43 +109,49 @@ public class Asseteer {
 			}
 		} catch (JsonProcessingException e) {
 			e.printStackTrace();
-			System.out.println(&quot;Malformed document&quot;);
-			System.exit(1);
+			System.err.println(&quot;Malformed document&quot;);
+			throw new WeirdFileException(&quot;Because of an issue, saving application state was not possible.&quot;, e);
 		} 
 	}
 
-<span class="nc" id="L85">	enum MENU_STATE {</span>
-<span class="nc" id="L86">		ADD_ASSET,</span>
-<span class="nc" id="L87">		EDIT_ASSET,</span>
-<span class="nc" id="L88">		REMOVE_ASSET,</span>
-<span class="nc" id="L89">		LIST_ASSETS,</span>
-<span class="nc" id="L90">		SEARCH_ASSET,</span>
-<span class="nc" id="L91">		QUIT;</span>
+	/**
+	 * Huvudmenyval
+	 */
+<span class="nc" id="L120">	enum MENU_STATE {</span>
+<span class="nc" id="L121">		ADD_ASSET,</span>
+<span class="nc" id="L122">		EDIT_ASSET,</span>
+<span class="nc" id="L123">		REMOVE_ASSET,</span>
+<span class="nc" id="L124">		LIST_ASSETS,</span>
+<span class="nc" id="L125">		SEARCH_ASSET,</span>
+<span class="nc" id="L126">		QUIT;</span>
 
+		/**
+		 *Strängrepresentation
+		 *@return sträng sträng
+		 */
 		@Override
 		public String toString() {
-<span class="nc" id="L95">			return menuRepresentation(this);</span>
+<span class="nc" id="L134">			return menuRepresentation(this);</span>
 	}
 }
 
-	public static void main(String[] args) {
+	/**
+	 * Huvudprogram
+	 * @param args indata
+	 * @throws PEBKAC användarfelsfel
+	 */
+	public static void main(String[] args) throws PEBKAC {
 		Asseteer a = new Asseteer(System.getProperty(&quot;user.home&quot;) + &quot;/asseteer.xml&quot;);
-		a.readState();
+		try {
+			a.readState();
+		} catch (WeirdFileException e) {
+			e.printStackTrace();
+			System.err.println(&quot;Corrupt file, start from scratch&quot;);
+			a.library = new ArrayList&lt;&gt;();
+		}
 		
-		Queue&lt;String&gt; opts = new LinkedList&lt;&gt;();
-		for(var item : args) {
-			opts.add(item);
-		}
-		while(!opts.isEmpty()) {
-			String item = opts.remove();
-			switch(item) {
-			case &quot;-f&quot;:
-			case &quot;--file&quot;:
-				break;
-			}
-		}
 		while(true) {
-		        MENU_STATE choice = menuOptionHelper(MENU_STATE.values(), &quot;### MENU ###&quot;, a.scanner); 
+		        MENU_STATE choice = menuOptionHelper(MENU_STATE.values(), &quot;### MAIN MENU ###&quot;, a.scanner); 
 		        System.out.println(&quot;You selected: \&quot;&quot; + choice + &quot;\&quot;&quot;);
 		        
 		        switch (choice) {
@@ -133,10 +171,11 @@ public class Asseteer {
 						a.MenuOptionSearchAsset();
 						break;
 					case QUIT:
-					default:
 						System.out.println(&quot;Exiting...&quot;);
 						System.exit(0);
 						break;
+					default:
+						throw new PEBKAC(&quot;Inmatningsfel&quot;);
 		        }  	
 		}
     }
@@ -161,7 +200,13 @@ public class Asseteer {
 		if (assetToRemove != null) {
 			library.remove(assetToRemove);
 			System.out.println(&quot;Asset removed.&quot;);
-			saveState();
+			try {
+				saveState();
+			} catch (WeirdFileException e) {
+				e.printStackTrace();
+				System.err.println(&quot;Program will halt&quot;);
+				System.exit(1);
+			}
 		} else {
 			System.out.println(&quot;Asset not found.&quot;);
 		}
@@ -169,7 +214,6 @@ public class Asseteer {
 
 
 	private void MenuOptionSearchAsset() {
-		//TODO try out streams here instead!
 		System.out.println(&quot;Enter a part of the asset to search:&quot;);
 		String s = scanner.nextLine();
 		boolean foundAnything = false;
@@ -248,22 +292,27 @@ public class Asseteer {
 				}
 			}
 
-			// Additional fields can be added here as needed
-
 			System.out.println(&quot;Asset updated.&quot;);
-			saveState();
+			try {
+				saveState();
+			} catch (WeirdFileException e) {
+				e.printStackTrace();
+				System.exit(1);
+			}
 		} else {
 			System.out.println(&quot;Asset not found.&quot;);
 		}
 	}
 
-	private void MenuOptionAddAsset() {
-		System.out.println(&quot;Add Asset&quot;);
-<span class="nc" id="L262">		enum ASSET_TYPES{</span>
-<span class="nc" id="L263">			PROGRAMVARA, </span>
-<span class="nc" id="L264">			SBOM,</span>
-<span class="nc" id="L265">			CANCEL</span>
+	private void MenuOptionAddAsset() throws PEBKAC {
+<span class="nc" id="L308">		enum ASSET_TYPES{</span>
+<span class="nc" id="L309">			PROGRAMVARA, </span>
+<span class="nc" id="L310">			SBOM,</span>
+<span class="nc" id="L311">			CANCEL</span>
 		}
+		
+		System.out.println(&quot;Add Asset&quot;);
+
 		var assetType = menuOptionHelper(ASSET_TYPES.values(), &quot;Add asset of which type?&quot;, scanner);
 		switch(assetType) {
 		case PROGRAMVARA:
@@ -288,7 +337,12 @@ public class Asseteer {
 			addDependencyMenuAction(programvara);
 						
 			library.add(programvara);
-			saveState();
+			try {
+				saveState();
+			} catch (WeirdFileException e) {
+				e.printStackTrace();
+				System.exit(1);
+			}
 			break;
 		case SBOM:
 			SBOM sbom = new SBOM();			
@@ -312,9 +366,12 @@ public class Asseteer {
 			addDependencyMenuAction(sbom);
 			
 			library.add(sbom);
-			saveState();
-			
-			
+			try {
+				saveState();
+			} catch (WeirdFileException e) {
+				e.printStackTrace();
+				System.exit(1);
+			}
 			break;
 			
 		case CANCEL:
@@ -322,6 +379,10 @@ public class Asseteer {
 		}
 	}
 
+	/**
+	 * Helper method
+	 * @param asset asset to add
+	 */
 	private void addDependencyMenuAction(Asset asset) {
 		System.out.println(&quot;Would you like to add a dependency? (y/n)&quot;);
 		String addDependencyResponse = scanner.nextLine().trim().toLowerCase();
@@ -348,11 +409,18 @@ public class Asseteer {
 		}
 	}
 	
+	/**
+	 * Helper method transforming enum name to a nice string that can be used in menus.
+	 * @param e enum
+	 * @return ADD_ASSET --&gt; Add asset
+	 */
 	private static String menuRepresentation(Enum&lt;?&gt; e) {
-		// ADD_ASSET --&gt; Add asset
 		return e.name().length() == 1? e.name().toUpperCase() : e.name().substring(0, 1).toUpperCase() + e.name().substring(1).toLowerCase().replaceAll(&quot;_&quot;, &quot; &quot;);
 	}
 	
+	/**
+	 * Standardkonstruktor
+	 */
 	public Asseteer() {
 		library = new ArrayList&lt;Asset&gt;();
 		reverse_lookup = new HashMap&lt;&gt;();
@@ -361,7 +429,25 @@ public class Asseteer {
 
     // GPT:s förslag E[] enumValues, hade helst velat skicka in typen istället, men orkar inte gräva just nu...
 	// Vore intressant att diskutera alternativ vid tillfälle.
-    private static &lt;E extends Enum&lt;E&gt;&gt; E menuOptionHelper(E[] enumValues, String menuName, Scanner scanner) {
+    /**
+     * Use: {@code var foo = menuOptionHelper(MY_ENUM.values(), &quot;My Menu&quot;, scanner)}
+     * &lt;p&gt;
+     * This returns an actual enum value that can be used in a switch statement.
+     * &lt;p&gt;
+     * &lt;pre&gt;
+     * My Menu
+     * 1 foo
+     * 2 bar
+     * 3 baz
+     * &lt;/pre&gt;
+     * @param &lt;E&gt; specific enum type
+     * @param enumValues enum values
+     * @param menuName top display 
+     * @param scanner e.g. System.in
+     * @return the specific enum value chosen
+     * @throws PEBKAC 
+     */
+    private static &lt;E extends Enum&lt;E&gt;&gt; E menuOptionHelper(E[] enumValues, String menuName, Scanner scanner) throws PEBKAC {
         boolean validInput = false;
         int choice = -1;
 
@@ -383,6 +469,7 @@ public class Asseteer {
                     return selectedEnum;
                 } else {
                     System.out.println(&quot;Invalid choice. Please enter a number between 1 and &quot; + enumValues.length + &quot;.&quot;);
+                    throw new PEBKAC(&quot;That is not a correct choice.&quot;);
                 }
             } catch (InputMismatchException e) {
                 if (scanner.hasNext()) {
@@ -390,7 +477,7 @@ public class Asseteer {
                     	System.out.println(&quot;User halted program&quot;);
                     	System.exit(0);
                     }
-                    System.out.println(&quot;Invalid input. Please enter an integer.&quot;);
+                    throw new PEBKAC(&quot;Invalid input. Please enter an integer.&quot;, e);
                 }
             }
         }
